@@ -13,5 +13,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ObjectDto implements Serializable {
     private String identifier;
-    private JsonNode competencyArea;
+    private JsonNode competencies_v5;
 }

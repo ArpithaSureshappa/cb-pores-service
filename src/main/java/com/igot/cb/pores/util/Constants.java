@@ -260,6 +260,7 @@ public class Constants {
     public static final String SPV_ORG_NAME = "Karmayogi Bharat";
     public static final String INVALID_DATA = "No data found";
   public static final String PLAYLIST_KEY_REDIS = "playListKey";
+    public static final String COMPETENCY_AREA_VALIDATION_FILE_JSON = "/payloadValidation/competencyAreaPayloadValidation.json";
 
   private Constants() {
     }

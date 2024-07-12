@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "competencyArea": {
+      "type": "string"
+    },
+    "competencyAreaId": {
+      "type": "integer"
+    },
+    "competencyAreaDescription": {
+      "type": "string"
+    },
+    "competencyTheme": {
+      "type": "string"
+    },
+    "competencyThemeId": {
+      "type": "integer"
+    },
+    "competencyThemeDescription": {
+      "type": "string"
+    },
+    "competencyThemeType": {
+      "type": "string"
+    },
+    "competencySubTheme": {
+      "type": "string"
+    },
+    "competencySubThemeId": {
+      "type": "integer"
+    },
+    "competencySubThemeDescription": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "competencyArea",
+    "competencyAreaId",
+    "competencyAreaDescription",
+    "competencyTheme",
+    "competencyThemeId",
+    "competencyThemeDescription",
+    "competencyThemeType",
+    "competencySubTheme",
+    "competencySubThemeId",
+    "competencySubThemeDescription"
+  ]
+}

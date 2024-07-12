@@ -22,6 +22,7 @@ import com.igot.cb.pores.elasticsearch.service.EsUtilService;
 import com.igot.cb.pores.exceptions.CustomException;
 import com.igot.cb.pores.util.CbServerProperties;
 import com.igot.cb.pores.util.Constants;
+import com.igot.cb.pores.util.PayloadValidation;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
@@ -54,6 +55,9 @@ public class CiosContentServiceImpl implements CiosContentService {
 
     @Autowired
     private RedisTemplate<String, SearchResult> redisTemplate;
+
+    @Autowired
+    private PayloadValidation payloadValidation;
 
     @Value("${search.result.redis.ttl}")
     private long searchResultRedisTtl;
@@ -163,33 +167,47 @@ public class CiosContentServiceImpl implements CiosContentService {
     private CiosContentEntity createNewContent(JsonNode jsonNode,ObjectDto dto) {
         log.info("SidJobServiceImpl::createOrUpdateContent:updating the content");
         try {
+            payloadValidation.validatePayload(Constants.COMPETENCY_AREA_VALIDATION_FILE_JSON, dto.getCompetencies_v5());
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
             CiosContentEntity igotContent = new CiosContentEntity();
             String externalId = jsonNode.path("content").path("externalId").asText();
+            String contentId = jsonNode.path("content").path("contentId").asText();
             Optional<CiosContentEntity> igotContentEntity = ciosRepository.findByExternalId(externalId);
             if (!igotContentEntity.isPresent()) {
-                igotContent.setContentId(generateId());
+                if(StringUtils.isNotEmpty(contentId)&&StringUtils.isNotBlank(contentId)) {
+                    igotContent.setContentId(contentId);
+                    ((ObjectNode) jsonNode.path("content")).put("contentId", contentId);
+                }else{
+                    String contentId1=generateId();
+                    igotContent.setContentId(contentId1);
+                    ((ObjectNode) jsonNode.path("content")).put("contentId", contentId1);
+                }
                 igotContent.setExternalId(externalId);
                 igotContent.setCreatedOn(currentTime);
                 igotContent.setLastUpdatedOn(currentTime);
                 igotContent.setIsActive(Constants.ACTIVE_STATUS);
-                ((ObjectNode) jsonNode.path("content")).put("contentId", generateId());
                 ((ObjectNode) jsonNode.path("content")).put(Constants.CREATED_ON, String.valueOf(currentTime));
                 ((ObjectNode) jsonNode.path("content")).put(Constants.LAST_UPDATED_ON, String.valueOf(currentTime));
                 ((ObjectNode) jsonNode.path("content")).put(Constants.IS_ACTIVE, Constants.ACTIVE_STATUS);
-                ((ObjectNode) jsonNode.path("content")).put(Constants.COMPETENCY,dto.getCompetencyArea());
+                ((ObjectNode) jsonNode.path("content")).put(Constants.COMPETENCY,dto.getCompetencies_v5());
                 addSearchTags(jsonNode);
                 igotContent.setCiosData(jsonNode);
             } else {
-                igotContent.setContentId(igotContentEntity.get().getContentId());
+                if(StringUtils.isNotEmpty(contentId)&&StringUtils.isNotBlank(contentId)) {
+                    igotContent.setContentId(contentId);
+                    ((ObjectNode) jsonNode.path("content")).put("contentId", contentId);
+                }else{
+                    String contentId1=generateId();
+                    igotContent.setContentId(contentId1);
+                    ((ObjectNode) jsonNode.path("content")).put("contentId", contentId1);
+                }
                 igotContent.setExternalId(igotContentEntity.get().getExternalId());
                 igotContent.setCreatedOn(igotContentEntity.get().getCreatedOn());
                 igotContent.setLastUpdatedOn(currentTime);
                 igotContent.setIsActive(Constants.ACTIVE_STATUS);
-                ((ObjectNode) jsonNode.path("content")).put("contentId", igotContentEntity.get().getContentId());
                 ((ObjectNode) jsonNode.path("content")).put(Constants.CREATED_ON, String.valueOf(igotContent.getCreatedOn()));
                 ((ObjectNode) jsonNode.path("content")).put(Constants.LAST_UPDATED_ON, String.valueOf(currentTime));
-                ((ObjectNode) jsonNode.path("content")).put(Constants.COMPETENCY,dto.getCompetencyArea());
+                ((ObjectNode) jsonNode.path("content")).put(Constants.COMPETENCY,dto.getCompetencies_v5());
                 igotContent.setCiosData(jsonNode);
             }
             return igotContent;
