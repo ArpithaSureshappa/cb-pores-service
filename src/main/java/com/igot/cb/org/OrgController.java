@@ -17,8 +17,8 @@ public class OrgController {
     OrgService orgService;
 
     @GetMapping("/framework/read")
-    public ResponseEntity<Object> readFramework(@RequestParam String frameworkName, @RequestParam String orgId, @RequestHeader(Constants.X_AUTH_TOKEN) String userAuthToken) {
-        ApiResponse response = orgService.readFramework(frameworkName,orgId,userAuthToken);
+    public ResponseEntity<Object> readFramework(@RequestParam String frameworkName, @RequestParam String orgId, @RequestParam String termName, @RequestHeader(value = Constants.X_AUTH_TOKEN) String userAuthToken) {
+        ApiResponse response = orgService.readFramework(frameworkName,orgId,termName,userAuthToken);
         return new ResponseEntity<>(response,response.getResponseCode());
     }
 

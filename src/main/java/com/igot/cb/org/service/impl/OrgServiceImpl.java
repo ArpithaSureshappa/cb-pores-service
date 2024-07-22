@@ -9,10 +9,12 @@ import com.igot.cb.playlist.util.ProjectUtil;
 import com.igot.cb.pores.Service.OutboundRequestHandlerServiceImpl;
 import com.igot.cb.pores.exceptions.CustomException;
 import com.igot.cb.pores.util.*;
+import com.igot.cb.producer.Producer;
 import com.igot.cb.transactional.cassandrautils.CassandraOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -41,8 +43,11 @@ public class OrgServiceImpl implements OrgService {
     @Autowired
     DemandService demandService;
 
+    @Autowired
+    Producer kafkaProducer;
+
     @Override
-    public ApiResponse readFramework(String frameworkName, String orgId, String userAuthToken) {
+    public ApiResponse readFramework(String frameworkName, String orgId, String termName, String userAuthToken) {
         ApiResponse response = ProjectUtil.createDefaultResponse(Constants.API_ORG_CREATE);
         try {
             if (StringUtils.isBlank(frameworkName) || StringUtils.isBlank(orgId)) {
@@ -75,45 +80,19 @@ public class OrgServiceImpl implements OrgService {
             }
             String fwName = (String) orgDetails.get(0).get(Constants.FRAMEWORKID);
             if (StringUtils.isBlank(fwName)) {
-                StringBuilder strUrl = new StringBuilder(cbServerProperties.getKnowledgeMS());
-                strUrl.append(cbServerProperties.getOdcsFrameworkCreate());
-                Map<String, Object> createReq = createFrameworkRequest(orgId, frameworkName);
-                Map<String, Object> request = new HashMap<>();
-                request.put(Constants.REQUEST,createReq);
-                Map<String, String> headers = new HashMap<>();
-                headers.put(Constants.X_CHANNEL_ID, orgId);
-                Map<String, Object> frameworkResponse = (Map<String, Object>) outboundRequestHandlerServiceImpl.fetchResultUsingPost(strUrl.toString(),
-                        request, headers);
-                String responseCode = (String) frameworkResponse.get(Constants.RESPONSE_CODE);
-                if (responseCode.equals(Constants.OK)) {
-                    Map<String, Object> result = (Map<String, Object>) frameworkResponse.get(Constants.RESULT);
-                    fwName = (String) result.getOrDefault(Constants.NODE_ID, "");
-                    Map<String, Object> map = new HashMap<>();
-                    map.put(Constants.FRAMEWORKID, fwName);
-                    map.put(Constants.ID, orgId);
-                    Map<String, Object> updateOrgDetails = cassandraOperation.updateRecord(Constants.KEYSPACE_SUNBIRD, Constants.ORG_TABLE, map);
-                    String updateResponse = (String) updateOrgDetails.get(Constants.RESPONSE);
-                    if (!StringUtils.isBlank(updateResponse) && updateResponse.equalsIgnoreCase(Constants.SUCCESS)) {
-                        log.info("updated framework_id to organisation table successfully with this name : {}", fwName);
-                    } else {
-                        log.error("Failed to update organization details with the new framework ID");
-                        response.getParams().setErr("Failed to update organization details with the framework ID");
-                        response.getParams().setStatus(Constants.FAILED);
-                        response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
-                        return response;
-                    }
-                } else {
-                    log.error("Failed to create framework: {}", frameworkResponse.get(Constants.RESPONSE_CODE));
-                    response.getParams().setErr("Failed to Create Framework: ");
-                    response.getParams().setStatus(Constants.FAILED);
-                    response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
-                    return response;
-                }
+                Map<String,Object> dataMap = new HashMap<>();
+                dataMap.put("orgId",orgId);
+                dataMap.put("frameworkName",frameworkName);
+                dataMap.put("termName",termName);
+                log.info("printing createReq {}",dataMap);
+                kafkaProducer.push(cbServerProperties.getTopicFrameworkCreate(),dataMap);
+                log.info("kafka message pushed for broadcast type");
+                response.getResult().put(Constants.FRAMEWORK, "Framework creation request has been published Awaiting processing.");
+                response.setResponseCode(HttpStatus.OK);
+            } else {
+                response.getResult().put(Constants.FRAMEWORK, fwName);
+                response.setResponseCode(HttpStatus.OK);
             }
-            ApiResponse apiResponse = frameworkRead(fwName);
-            Map<String, Object> frameworkDetails = (Map<String, Object>) apiResponse.get(Constants.FRAMEWORK);
-            response.getResult().put(Constants.FRAMEWORK, frameworkDetails);
-            response.setResponseCode(HttpStatus.OK);
         } catch (CustomException e) {
             response.getParams().setErr(e.getMessage());
             response.setResponseCode(HttpStatus.BAD_REQUEST);
@@ -153,23 +132,6 @@ public class OrgServiceImpl implements OrgService {
             response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
-    }
-
-    public static Map<String, Object> createFrameworkRequest(String channelId, String frameworkName) {
-        Map<String, Object> framework = createFramework(channelId, frameworkName);
-        Map<String, Object> request = new HashMap<>();
-        request.put("framework", framework);
-        return request;
-    }
-
-    private static Map<String, Object> createFramework(String channelId, String frameworkName) {
-        Map<String, Object> framework = new HashMap<>();
-        framework.put(Constants.NAME, frameworkName);
-        framework.put(Constants.DESCRIPTION, "Master Framework");
-        framework.put(Constants.CODE, frameworkName);
-        framework.put(Constants.OWNER, channelId);
-        framework.put(Constants.CHANNELS, createChannels(channelId));
-        return framework;
     }
 
     private static List<Map<String, String>> createChannels(String channelId) {

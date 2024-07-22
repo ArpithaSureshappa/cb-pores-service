@@ -97,7 +97,7 @@ public class DesignationServiceImpl implements DesignationService {
 
   @Autowired
   private OutboundRequestHandlerServiceImpl outboundRequestHandlerServiceImpl;
-
+  
   @Autowired
   private RedisTemplate<String, SearchResult> redisTemplate;
 
@@ -170,18 +170,20 @@ public class DesignationServiceImpl implements DesignationService {
     payloadValidation.validatePayload(Constants.TERM_CREATE_PAYLOAD_VALIDATION, request);
     String name = request.get(Constants.NAME).asText();
     String ref_Id = request.get(Constants.REF_ID).asText();
+    String framework = request.get(Constants.FRAMEWORK).asText();
+    String category = request.get(Constants.CATEGORY).asText();
     Optional<DesignationEntity> designationEntity = designationRepository.findByIdAndIsActive(ref_Id, Boolean.TRUE);
     if (designationEntity.isPresent()) {
       DesignationEntity designation = designationEntity.get();
       if (designation.getIsActive()) {
-        ApiResponse readResponse = readTerm(ref_Id);
+        ApiResponse readResponse = readTerm(ref_Id,framework,category);
         if (readResponse == null) {
           response.getParams().setErr("Failed to validate sector exists or not.");
           response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
           response.getParams().setStatus(Constants.FAILED);
         } else if (HttpStatus.NOT_FOUND.equals(readResponse.getResponseCode())) {
           Map<String, Object> reqBody = new HashMap<>();
-          request.fields().forEachRemaining(entry -> reqBody.put(entry.getKey(), entry.getValue().asText()));
+          request.fields().forEachRemaining(entry -> reqBody.put(entry.getKey(), toJavaObject(entry.getValue())));
           Map<String, Object> parentObj = new HashMap<>();
           parentObj.put(Constants.IDENTIFIER,
                   cbServerProperties.getOdcsDesignationFramework() + "_" + cbServerProperties.getOdcsDesignationCategory());
@@ -192,8 +194,8 @@ public class DesignationServiceImpl implements DesignationService {
           createReq.put(Constants.REQUEST, termReq);
           StringBuilder strUrl = new StringBuilder(cbServerProperties.getKnowledgeMS());
           strUrl.append(cbServerProperties.getOdcsTermCrete()).append("?framework=")
-                  .append(cbServerProperties.getOdcsDesignationFramework()).append("&category=")
-                  .append(cbServerProperties.getOdcsDesignationCategory());
+                  .append(framework).append("&category=")
+                  .append(category);
           Map<String, Object> termResponse = (Map<String, Object>) outboundRequestHandlerServiceImpl.fetchResultUsingPost(strUrl.toString(),
                   createReq);
           if (termResponse != null
@@ -622,13 +624,13 @@ public class DesignationServiceImpl implements DesignationService {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     return dateFormat.parse(value);
   }
-  public ApiResponse readTerm(String Id) {
+  public ApiResponse readTerm(String Id, String framework, String category) {
     ApiResponse response = new ApiResponse();
     try {
       StringBuilder strUrl = new StringBuilder(cbServerProperties.getKnowledgeMS());
       strUrl.append(cbServerProperties.getOdcsDesignationTermRead()).append("/").append(Id).append("?framework=")
-              .append(cbServerProperties.getOdcsDesignationFramework()).append("&category=")
-              .append(cbServerProperties.getOdcsDesignationCategory());
+              .append(framework).append("&category=")
+              .append(category);
 
       Map<String, Object> map = new HashMap<String, Object>();
       Map<String, Object> desgResponse = (Map<String, Object>) outboundRequestHandlerServiceImpl.fetchResult(strUrl.toString());
@@ -779,4 +781,15 @@ public class DesignationServiceImpl implements DesignationService {
     response.getParams().setStatus(status);
     response.setResponseCode(httpStatus);
   }
+
+  private static Object toJavaObject(JsonNode jsonNode) {
+    if (jsonNode.isObject()) {
+      Map<String, Object> map = new HashMap<>();
+      jsonNode.fields().forEachRemaining(entry -> map.put(entry.getKey(), toJavaObject(entry.getValue())));
+      return map;
+    } else {
+      return jsonNode.asText();
+    }
+  }
+
 }

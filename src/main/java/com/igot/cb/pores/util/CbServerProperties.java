@@ -144,5 +144,14 @@ public class CbServerProperties {
   @Value("${odcs.framework.read}")
   private String odcsFrameworkRead;
 
+  @Value("${framework.copy}")
+  private String frameworkCopy;
+
+  @Value("${framework.publish}")
+  private String frameworkPublish;
+
+  @Value("${kafka.topic.framework.create}")
+  private String topicFrameworkCreate;
+
 
 }

@@ -310,6 +310,7 @@ public class Constants {
     public static final String EXCEPTION_MSG_UPDATE = "Exception occurred while updating record to ";
     public static final String FRAMEWORK = "framework";
     public static final String CHANNELS = "channels";
+    public static final String MASTER = "master";
     public static final String CONTENT_PROVIDER_INDEX_NAME = "content_provider";
     public static final String CONTENT_PARTNER = "contentPartner";
     private Constants() {
