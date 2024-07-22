@@ -74,10 +74,12 @@ public class ContentPartnerServiceImpl implements ContentPartnerService {
                 jsonNode.set(Constants.CONTENT_PROVIDER_ID, new TextNode(saveJsonEntity.getId()));
                 jsonNode.setAll((ObjectNode) saveJsonEntity.getData());
                 Map<String, Object> map = objectMapper.convertValue(jsonNode, Map.class);
-                esUtilService.addDocument(Constants.INDEX_NAME, Constants.INDEX_TYPE, id, map, cbServerProperties.getElasticContentJsonPath());
+                esUtilService.addDocument(Constants.CONTENT_PROVIDER_INDEX_NAME, Constants.INDEX_TYPE, id, map, cbServerProperties.getElasticContentJsonPath());
                 cacheService.putCache(jsonNodeEntity.getId(), jsonNode);
                 log.info("Content partner created");
+                map.put("id",jsonNodeEntity.getId());
                 response.setMessage(Constants.SUCCESSFULLY_CREATED);
+                response.setResult(map);
             } else {
                 log.info("Updating content partner entity");
                 String exitingId = partnerDetails.get("id").asText();
@@ -93,10 +95,12 @@ public class ContentPartnerServiceImpl implements ContentPartnerService {
                                 objectMapper.convertValue(updateJsonEntity.getData(), new TypeReference<Map<String, Object>>() {
                                 });
                         updateJsonEntity.setId(exitingId);
-                        esUtilService.updateDocument(Constants.INDEX_NAME, Constants.INDEX_TYPE, exitingId, jsonMap, cbServerProperties.getElasticContentJsonPath());
+                        esUtilService.updateDocument(Constants.CONTENT_PROVIDER_INDEX_NAME, Constants.INDEX_TYPE, exitingId, jsonMap, cbServerProperties.getElasticContentJsonPath());
                         cacheService.putCache(exitingId, updateJsonEntity);
                         log.info("updated the content partner");
                         response.setMessage(Constants.SUCCESSFULLY_UPDATED);
+                        jsonMap.put("id",exitingId);
+                        response.setResult(jsonMap);
                     }
                 }
             }
@@ -164,8 +168,11 @@ public class ContentPartnerServiceImpl implements ContentPartnerService {
         }
         try {
             SearchResult searchResult =
-                    esUtilService.searchDocuments(Constants.INDEX_NAME, searchCriteria);
-            response.getResult().put(Constants.RESULT, searchResult);
+                    esUtilService.searchDocuments(Constants.CONTENT_PROVIDER_INDEX_NAME, searchCriteria);
+            Map<String, Object> jsonMap =
+                    objectMapper.convertValue(searchResult, new TypeReference<Map<String, Object>>() {
+                    });
+            response.setResult(jsonMap);
             createSuccessResponse(response);
             return response;
         } catch (Exception e) {
@@ -192,7 +199,7 @@ public class ContentPartnerServiceImpl implements ContentPartnerService {
                         josnEntity.setUpdatedOn(currentTime);
                         ContentPartnerEntity updateJsonEntity = entityRepository.save(josnEntity);
                         Map<String, Object> map = objectMapper.convertValue(data, Map.class);
-                        esUtilService.addDocument(Constants.INDEX_NAME, Constants.INDEX_TYPE, id, map, cbServerProperties.getElasticContentJsonPath());
+                        esUtilService.addDocument(Constants.CONTENT_PROVIDER_INDEX_NAME, Constants.INDEX_TYPE, id, map, cbServerProperties.getElasticContentJsonPath());
                         cacheService.putCache(id, data);
                         return Constants.DELETED_SUCCESSFULLY;
                     } else

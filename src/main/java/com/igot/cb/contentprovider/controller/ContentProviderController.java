@@ -15,30 +15,30 @@ public class ContentProviderController {
     @Autowired
     private ContentPartnerService partnerService;
 
-    @PostMapping("/create")
+    @PostMapping("/v1/create")
     public ResponseEntity<CustomResponse> create(@RequestBody JsonNode contentPartnerDetails) {
         CustomResponse response = partnerService.createOrUpdate(contentPartnerDetails);
         return new ResponseEntity<>(response, response.getResponseCode());
     }
 
-    @PostMapping("/update")
+    @PostMapping("/v1/update")
     public ResponseEntity<?> update(@RequestBody JsonNode contentPartnerDetails) {
         CustomResponse response = partnerService.createOrUpdate(contentPartnerDetails);
         return new ResponseEntity<>(response, response.getResponseCode());
     }
 
-    @GetMapping("/read/{id}")
+    @GetMapping("/v1/read/{id}")
     public ResponseEntity<?> read(@PathVariable String id) {
         CustomResponse response = partnerService.read(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @PostMapping("/filter")
+    @PostMapping("/v1/filter")
     public ResponseEntity<?> search(@RequestBody SearchCriteria searchCriteria) {
         CustomResponse response = partnerService.searchEntity(searchCriteria);
         return new ResponseEntity<>(response, response.getResponseCode());
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/v1/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable String id) {
         String response = partnerService.delete(id);
         return new ResponseEntity<>(response, HttpStatus.OK);

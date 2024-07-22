@@ -31,4 +31,5 @@ public class CiosContentEntity implements Serializable {
     private Boolean isActive;
     private Timestamp createdOn;
     private Timestamp lastUpdatedOn;
+    private String partnerId;
 }

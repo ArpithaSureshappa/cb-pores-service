@@ -208,6 +208,7 @@ public class CiosContentServiceImpl implements CiosContentService {
             JsonNode jsonNode=dto.getContentData();
             payloadValidation.validatePayload(Constants.CIOS_CONTENT_VALIDATION_FILE_JSON,dto.getContentData());
             payloadValidation.validatePayload(Constants.COMPETENCY_AREA_VALIDATION_FILE_JSON, dto.getCompetencies_v5());
+            payloadValidation.validatePayload(Constants.PAYLOAD_VALIDATION_FILE_CONTENT_PROVIDER, dto.getContentPartner());
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
             CiosContentEntity igotContent = new CiosContentEntity();
             String externalId = jsonNode.path("content").path("externalId").asText();
@@ -218,6 +219,7 @@ public class CiosContentServiceImpl implements CiosContentService {
                 igotContent.setCreatedOn(currentTime);
                 igotContent.setLastUpdatedOn(currentTime);
                 igotContent.setIsActive(Constants.ACTIVE_STATUS);
+                igotContent.setPartnerId(dto.getContentPartner().get("id").asText());
                 String appIcon="https://portal.karmayogiqa.nic.in/content-store/content/do_1140936641201520641494/artifact/do_1140936641201520641494_1720420145273_red-shield-copy-final.jpg";
                 ((ObjectNode) jsonNode.path("content")).put("appIcon", appIcon);
                 ((ObjectNode) jsonNode.path("content")).put("contentId", igotContent.getContentId());
@@ -225,6 +227,7 @@ public class CiosContentServiceImpl implements CiosContentService {
                 ((ObjectNode) jsonNode.path("content")).put(Constants.LAST_UPDATED_ON, String.valueOf(currentTime));
                 ((ObjectNode) jsonNode.path("content")).put(Constants.IS_ACTIVE, Constants.ACTIVE_STATUS);
                 ((ObjectNode) jsonNode.path("content")).put(Constants.COMPETENCIES_V5,dto.getCompetencies_v5());
+                ((ObjectNode) jsonNode.path("content")).put(Constants.CONTENT_PARTNER,dto.getContentPartner());
                 addSearchTags(jsonNode);
                 igotContent.setCiosData(jsonNode);
             } else {
@@ -233,12 +236,14 @@ public class CiosContentServiceImpl implements CiosContentService {
                 igotContent.setCreatedOn(ciosContentEntity.get().getCreatedOn());
                 igotContent.setLastUpdatedOn(currentTime);
                 igotContent.setIsActive(Constants.ACTIVE_STATUS);
+                igotContent.setPartnerId(dto.getContentPartner().get("id").asText());
                 String appIcon="https://portal.karmayogiqa.nic.in/content-store/content/do_1140936641201520641494/artifact/do_1140936641201520641494_1720420145273_red-shield-copy-final.jpg";
                 ((ObjectNode) jsonNode.path("content")).put("appIcon", appIcon);
                 ((ObjectNode) jsonNode.path("content")).put("contentId", ciosContentEntity.get().getContentId());
                 ((ObjectNode) jsonNode.path("content")).put(Constants.CREATED_ON, String.valueOf(igotContent.getCreatedOn()));
                 ((ObjectNode) jsonNode.path("content")).put(Constants.LAST_UPDATED_ON, String.valueOf(currentTime));
                 ((ObjectNode) jsonNode.path("content")).put(Constants.COMPETENCIES_V5,dto.getCompetencies_v5());
+                ((ObjectNode) jsonNode.path("content")).put(Constants.CONTENT_PARTNER,dto.getContentPartner());
                 addSearchTags(jsonNode);
                 igotContent.setCiosData(jsonNode);
             }

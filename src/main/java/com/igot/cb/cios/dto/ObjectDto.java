@@ -14,4 +14,5 @@ import java.io.Serializable;
 public class ObjectDto implements Serializable {
     private JsonNode contentData;
     private JsonNode competencies_v5;
+    private JsonNode contentPartner;
 }
