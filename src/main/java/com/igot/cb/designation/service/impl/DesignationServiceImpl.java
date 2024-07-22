@@ -98,6 +98,7 @@ public class DesignationServiceImpl implements DesignationService {
   @Autowired
   private OutboundRequestHandlerServiceImpl outboundRequestHandlerServiceImpl;
 
+  @Autowired
   private RedisTemplate<String, SearchResult> redisTemplate;
 
   @Value("${search.result.redis.ttl}")

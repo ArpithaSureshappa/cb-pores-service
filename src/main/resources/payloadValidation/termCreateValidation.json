@@ -68,12 +68,16 @@
     },
     "refType": {
       "dataType": "string"
+    },
+    "framework": {
+      "dataType": "string"
     }
   },
   "required": [
     "refId",
     "name",
     "code",
-    "category"
+    "category",
+    "framework"
   ]
 }

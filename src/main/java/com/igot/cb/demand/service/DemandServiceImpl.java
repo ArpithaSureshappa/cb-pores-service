@@ -219,7 +219,7 @@ public class DemandServiceImpl implements DemandService {
             dataMap.put(Constants.DATA,map);
             dataMap.put(Constants.IS_SPV_REQUEST,false);
             dataMap.put(Constants.USER_ID_RQST,userId);
-            if(isSpvRequest(userId)){
+            if(isSpvRequest(userId,Constants.SPV_ADMIN)){
                 dataMap.put(Constants.IS_SPV_REQUEST,true);
             }
             if (map.get(Constants.REQUEST_TYPE).equals(Constants.BROADCAST) && ObjectUtils.isNotEmpty(map.get(Constants.PREFERRED_PROVIDER))) {
@@ -446,7 +446,7 @@ public class DemandServiceImpl implements DemandService {
                 notifcationMap.put(Constants.DATA,map);
                 notifcationMap.put(Constants.USER_ID_RQST,userId);
                 notifcationMap.put(Constants.IS_SPV_REQUEST,false);
-                if(map.get(Constants.STATUS).equals(Constants.INVALID) && isSpvRequest(userId)){
+                if(map.get(Constants.STATUS).equals(Constants.INVALID) && isSpvRequest(userId,Constants.SPV_ADMIN)){
                     notifcationMap.put(Constants.IS_SPV_REQUEST,true);
                     kafkaProducer.push(propertiesConfig.getDemandRequestKafkaTopic(),notifcationMap);
                 }
@@ -568,7 +568,8 @@ public class DemandServiceImpl implements DemandService {
         response.setResponseCode(httpStatus);
     }
 
-    public boolean isSpvRequest(String userId) {
+    @Override
+    public boolean isSpvRequest(String userId,String requiredRole) {
         Map<String, String> header = new HashMap<>();
         Map<String, Object> readData = (Map<String, Object>) requestHandlerService
                 .fetchUsingGetWithHeadersProfile(propertiesConfig.getSbUrl() + propertiesConfig.getUserReadEndPoint() + userId,
@@ -577,9 +578,12 @@ public class DemandServiceImpl implements DemandService {
         Map<String, Object> responseMap = (Map<String, Object>) result.get(Constants.RESPONSE);
         List roles = (List) responseMap.get(Constants.ROLES);
 
-        if (roles.contains(Constants.SPV_ADMIN)) {
+        if (requiredRole != null && roles.contains(requiredRole)) {
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
+
     }
 
     private boolean handleProviderValidation(JsonNode demandDetails, CustomResponse response) {

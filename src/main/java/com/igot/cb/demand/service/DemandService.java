@@ -15,4 +15,6 @@ public interface DemandService {
 
   CustomResponse updateDemandStatus(JsonNode updateDetails, String token, String rootOrgId);
 
+  boolean isSpvRequest(String userId, String requiredRole);
+
 }

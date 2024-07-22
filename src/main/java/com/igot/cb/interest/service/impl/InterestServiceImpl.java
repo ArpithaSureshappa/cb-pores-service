@@ -322,7 +322,7 @@ public class InterestServiceImpl implements InterestService {
       dataMap.put(Constants.DATA,demandMap);
       dataMap.put(Constants.IS_SPV_REQUEST,false);
       dataMap.put(Constants.USER_ID_RQST,userId);
-      if(demandService.isSpvRequest(userId)){
+      if(demandService.isSpvRequest(userId,Constants.SPV_ADMIN)){
         dataMap.put(Constants.IS_SPV_REQUEST,true);
       }
         kafkaProducer.push(cbServerProperties.getDemandRequestKafkaTopic(), dataMap);

@@ -36,4 +36,7 @@ public interface CassandraOperation {
 
     public List<Map<String, Object>> getRecordsByPropertiesWithoutFiltering(String keyspaceName, String tableName,
                                                                             Map<String, Object> propertyMap, List<String> fields, Integer limit);
+
+    public Map<String,Object> updateRecord(
+            String keyspaceName, String tableName, Map<String, Object> request);
 }

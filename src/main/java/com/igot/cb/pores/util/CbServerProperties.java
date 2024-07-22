@@ -138,5 +138,11 @@ public class CbServerProperties {
   @Value("${odcs.competency.sub.theme.category.name}")
   private String odcsCompetencySubThemeCategory;
 
+  @Value("${odcs.framework.create}")
+  private String odcsFrameworkCreate;
+
+  @Value("${odcs.framework.read}")
+  private String odcsFrameworkRead;
+
 
 }

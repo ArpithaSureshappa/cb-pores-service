@@ -11,10 +11,8 @@ import com.datastax.driver.core.querybuilder.Select.Where;
 import com.igot.cb.pores.util.Constants;
 import com.igot.cb.pores.util.ApiResponse;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -159,5 +157,72 @@ public class CassandraOperationImpl implements CassandraOperation {
             logger.error(Constants.EXCEPTION_MSG_FETCH + tableName + " : " + e.getMessage(), e);
         }
         return response;
+    }
+
+    @Override
+    public Map<String,Object> updateRecord(
+            String keyspaceName, String tableName, Map<String, Object> request) {
+        long startTime = System.currentTimeMillis();
+        logger.debug("Cassandra Service updateRecord method started at ==" + startTime);
+        Map<String,Object> response = new HashMap<>();
+        String query = getUpdateQueryStatement(keyspaceName, tableName, request);
+        try {
+            PreparedStatement statement = connectionManager.getSession(keyspaceName).prepare(query);
+            Object[] array = new Object[request.size()];
+            int i = 0;
+            String str = "";
+            int index = query.lastIndexOf(Constants.SET.trim());
+            str = query.substring(index + 4);
+            str = str.replace(Constants.EQUAL_WITH_QUE_MARK, "");
+            str = str.replace(Constants.WHERE_ID, "");
+            str = str.replace(Constants.SEMICOLON, "");
+            String[] arr = str.split(",");
+            for (String key : arr) {
+                array[i++] = request.get(key.trim());
+            }
+            array[i] = request.get(Constants.ID);
+            BoundStatement boundStatement = statement.bind(array);
+            connectionManager.getSession(keyspaceName).execute(boundStatement);
+            response.put(Constants.RESPONSE, Constants.SUCCESS);
+            if (tableName.equalsIgnoreCase(Constants.USER)) {
+                logger.info("Cassandra Service updateRecord in user table :" + request);
+            }
+        } catch (Exception e) {
+            if (e.getMessage().contains(Constants.UNKNOWN_IDENTIFIER)) {
+                logger.error(
+                        Constants.EXCEPTION_MSG_UPDATE + tableName + " : " + e.getMessage(), e);
+                String errMsg = String.format("Exception occurred while updating record to to %s %s", tableName, e.getMessage());
+                response.put(Constants.RESPONSE, Constants.FAILED);
+                response.put(Constants.ERROR_MESSAGE, errMsg);
+            }
+            logger.error(Constants.EXCEPTION_MSG_UPDATE + tableName + " : " + e.getMessage(), e);
+        } finally {
+            logQueryElapseTime("updateRecord", startTime, query);
+        }
+        return response;
+    }
+
+    public static String getUpdateQueryStatement(
+            String keyspaceName, String tableName, Map<String, Object> map) {
+        StringBuilder query =
+                new StringBuilder(
+                        Constants.UPDATE + keyspaceName + Constants.DOT + tableName + Constants.SET);
+        Set<String> key = new HashSet<>(map.keySet());
+        key.remove(Constants.ID);
+        query.append(String.join(" = ? ,", key));
+        query.append(
+                Constants.EQUAL_WITH_QUE_MARK + Constants.WHERE_ID + Constants.EQUAL_WITH_QUE_MARK);
+        return query.toString();
+    }
+
+    protected void logQueryElapseTime(
+            String operation, long startTime, String query) {
+        logger.info("Cassandra query : " + query);
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        String message =
+                "Cassandra operation {0} started at {1} and completed at {2}. Total time elapsed is {3}.";
+        MessageFormat mf = new MessageFormat(message);
+        logger.debug(mf.format(new Object[] {operation, startTime, stopTime, elapsedTime}));
     }
 }
