@@ -98,7 +98,6 @@ public class FileProcessService {
             rowData.put(excelHeader, cellValue);
           }
         }
-        log.info("Data Rows: " + rowData);
         if (allBlank) {
           break; // If all cells are blank in the current row, stop processing
         }
@@ -137,7 +136,6 @@ public class FileProcessService {
           }
           rowData.put(header, cellValue);
         }
-        log.info("Data Rows: " + rowData);
         if (allBlank) {
           break; // If all cells are blank in the current row, stop processing
         }

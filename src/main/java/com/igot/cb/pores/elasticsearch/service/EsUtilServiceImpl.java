@@ -1,13 +1,23 @@
 package com.igot.cb.pores.elasticsearch.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.igot.cb.pores.elasticsearch.config.EsConfig;
 import com.igot.cb.pores.elasticsearch.dto.FacetDTO;
 import com.igot.cb.pores.elasticsearch.dto.SearchCriteria;
 import com.igot.cb.pores.elasticsearch.dto.SearchResult;
+import com.igot.cb.pores.exceptions.CustomException;
 import com.igot.cb.pores.util.Constants;
 import com.networknt.schema.JsonSchemaFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -21,7 +31,12 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.WildcardQueryBuilder;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -32,12 +47,8 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.Map.Entry;
 
 @Service
 @Slf4j
@@ -466,6 +477,42 @@ public class EsUtilServiceImpl implements EsUtilService {
         }
         return null;
     }
+
+    @Override
+    public boolean isIndexPresent(String indexName) {
+        try {
+            GetIndexRequest request = new GetIndexRequest(indexName);
+            return elasticsearchClient.indices().exists(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("Error checking if index exists", e);
+            return false;
+        }
+    }
+
+    @Override
+    public BulkResponse saveAll(String esIndexName,
+        String type,
+        List<JsonNode> entities) throws IOException {
+        try {
+            log.info("EsUtilServiceImpl :: saveAll");
+            BulkRequest bulkRequest = new BulkRequest();
+            entities.forEach(entity -> {
+                String formattedId = entity.get(Constants.ID).asText();
+                Map<String, Object> entityMap = objectMapper.convertValue(entity, Map.class);
+                IndexRequest indexRequest = new IndexRequest(esIndexName, type, formattedId)
+                    .source(entityMap, XContentType.JSON);
+                bulkRequest.add(indexRequest);
+            });
+
+            RequestOptions options = RequestOptions.DEFAULT;
+            return elasticsearchClient.bulk(bulkRequest, options);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new CustomException("error bulk uploading", e.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }
 

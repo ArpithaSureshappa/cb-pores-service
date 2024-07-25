@@ -21,7 +21,7 @@ public class PayloadValidation {
   private Logger logger = LoggerFactory.getLogger(DemandServiceImpl.class);
 
   public void validatePayload(String fileName, JsonNode payload) {
-    log.info("PayloadValidation::validatePayload:inside");
+//    log.info("PayloadValidation::validatePayload:inside");
     try {
       JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance();
       InputStream schemaStream = schemaFactory.getClass().getResourceAsStream(fileName);

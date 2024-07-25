@@ -7,6 +7,7 @@ import com.igot.cb.pores.util.ApiResponse;
 import com.igot.cb.pores.dto.CustomResponse;
 import com.igot.cb.pores.elasticsearch.dto.SearchCriteria;
 
+import com.igot.cb.pores.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,9 +35,9 @@ public class DesignationController {
   private DesignationService designationService;
 
   @PostMapping(value = "/upload", consumes = "multipart/form-data")
-  public ResponseEntity<String> loadDesignation(@RequestParam("file") MultipartFile file) {
+  public ResponseEntity<String> loadDesignation(@RequestParam("file") MultipartFile file, @RequestHeader(Constants.X_AUTH_TOKEN) String token) {
     try {
-      designationService.loadDesignation(file);
+      designationService.loadDesignation(file, token);
       return ResponseEntity.ok("Loading of designations from excel is successful.");
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

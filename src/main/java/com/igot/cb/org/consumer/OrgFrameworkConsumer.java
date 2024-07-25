@@ -83,7 +83,7 @@ public class OrgFrameworkConsumer {
                 String updateResponse = (String) updateOrgDetails.get(Constants.RESPONSE);
                 if (!StringUtils.isBlank(updateResponse) && updateResponse.equalsIgnoreCase(Constants.SUCCESS)) {
                     logger.info("Updated framework_id in organization table successfully with name: {}", fwName);
-                    createOrgTerm(termName, fwName);
+                    createOrgTerm(termName, fwName, frameworkName);
                     publishFramework(fwName, orgId);
                 } else {
                     logger.error("Failed to update organization details with the new framework ID");
@@ -102,6 +102,7 @@ public class OrgFrameworkConsumer {
         try {
             StringBuilder strUrl = new StringBuilder(configuration.getKnowledgeMS());
             strUrl.append(configuration.getOdcsFrameworkRead()).append("/").append(frameworkId);
+            logger.info("prinitng framework read url "+strUrl.toString());
             Map<String, Object> framworkResponse = (Map<String, Object>) outboundRequestHandlerServiceImpl.fetchResult(strUrl.toString());
             if (null != framworkResponse) {
                 if (Constants.OK.equalsIgnoreCase((String) framworkResponse.get(Constants.RESPONSE_CODE))) {
@@ -123,9 +124,10 @@ public class OrgFrameworkConsumer {
         return code;
     }
 
-    private void createOrgTerm(String termName, String framework) {
+    private void createOrgTerm(String termName, String framework, String masterFramework) {
         try {
-            String category = frameworkRead(framework);
+            String category = frameworkRead(masterFramework);
+            logger.info("category first "+category);
             if (StringUtils.isNotEmpty(category)) {
                 Map<String, Object> termMap = createTermMap(termName, category);
                 Map<String, Object> requestMap = createRequestMap(termMap);

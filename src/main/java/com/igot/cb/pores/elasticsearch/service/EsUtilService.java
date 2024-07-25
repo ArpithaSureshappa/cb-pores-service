@@ -1,7 +1,11 @@
 package com.igot.cb.pores.elasticsearch.service;
 
+import org.elasticsearch.action.bulk.BulkResponse;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.igot.cb.pores.elasticsearch.dto.SearchCriteria;
 import com.igot.cb.pores.elasticsearch.dto.SearchResult;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -16,5 +20,9 @@ public interface EsUtilService {
   void deleteDocumentsByCriteria(String esIndexName, SearchSourceBuilder sourceBuilder);
 
   SearchResult searchDocuments(String esIndexName, SearchCriteria searchCriteria) throws Exception;
+
+  public boolean isIndexPresent(String indexName);
+
+  public BulkResponse saveAll(String esIndexName, String type, List<JsonNode> entities) throws IOException;
 
 }
