@@ -16,6 +16,8 @@ import com.igot.cb.competencies.subtheme.entity.CompetencySubThemeEntity;
 import com.igot.cb.designation.entity.DesignationEntity;
 import com.igot.cb.designation.repository.DesignationRepository;
 import com.igot.cb.designation.service.DesignationService;
+import com.igot.cb.org.service.OrgService;
+import com.igot.cb.org.service.impl.OrgServiceImpl;
 import com.igot.cb.playlist.util.ProjectUtil;
 import com.igot.cb.pores.Service.OutboundRequestHandlerServiceImpl;
 import com.igot.cb.pores.cache.CacheService;
@@ -56,6 +58,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -249,11 +253,14 @@ public class DesignationServiceImpl implements DesignationService {
     String ref_Id = request.get(Constants.REF_ID).asText();
     String framework = request.get(Constants.FRAMEWORK).asText();
     String category = request.get(Constants.CATEGORY).asText();
+    JsonNode additionalProperties = request.get(Constants.ADDITIONAL_PROPERTIES);
+    String parentCategory = additionalProperties.path(Constants.PARENT_CATEGORY).asText();
+    String termCode = additionalProperties.path(Constants.PREV_TERM_CODE).asText();
     Optional<DesignationEntity> designationEntity = designationRepository.findByIdAndIsActive(ref_Id, Boolean.TRUE);
     if (designationEntity.isPresent()) {
       DesignationEntity designation = designationEntity.get();
       if (designation.getIsActive()) {
-        ApiResponse readResponse = readTerm(ref_Id,framework,category);
+        ApiResponse readResponse = frameworkRead(framework, parentCategory, termCode, ref_Id);
         if (readResponse == null) {
           response.getParams().setErr("Failed to validate sector exists or not.");
           response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -282,12 +289,13 @@ public class DesignationServiceImpl implements DesignationService {
             reqBodyMap.put(Constants.DESIGNATION, name);
             reqBodyMap.put(Constants.REF_NODES, termIdentifier);
             CustomResponse desgResponse = updateIdentifiersToDesignation(objectMapper.valueToTree(reqBodyMap));
-            response.getResult().put(Constants.IDENTIFIER, termIdentifier);
             if (desgResponse.getResponseCode() != HttpStatus.OK) {
               log.error("Failed to update designation: " + response.getParams().getErr());
               response.getParams().setErr("Failed to update designation.");
               response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
               response.getParams().setStatus(Constants.FAILED);
+            } else {
+              response.getResult().put(Constants.NODE_ID, termIdentifier);
             }
           } else {
             log.error("Failed to create the Designation with name: " + ref_Id);
@@ -879,6 +887,85 @@ public class DesignationServiceImpl implements DesignationService {
     response.setParams(new RespParam());
     response.getParams().setStatus(status);
     response.setResponseCode(httpStatus);
+  }
+  @Override
+  public ApiResponse frameworkRead(String frameworkId, String categoryCode, String termCode, String refId) {
+    ApiResponse response = ProjectUtil.createDefaultResponse("");
+    try {
+      // Build URL and fetch framework data
+      String url = cbServerProperties.getKnowledgeMS() + cbServerProperties.getOdcsFrameworkRead() + "/" + frameworkId;
+      logger.info("printin frameworkRead url "+url);
+      Map<String, Object> frameworkResponse = (Map<String, Object>) outboundRequestHandlerServiceImpl.fetchResult(url);
+
+      if (MapUtils.isEmpty(frameworkResponse)) {
+        response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
+        response.getParams().setErr("Failed to read framework details for ID: " + frameworkId);
+        return response;
+      }
+
+      String responseCode = (String) frameworkResponse.get(Constants.RESPONSE_CODE);
+      if (!Constants.OK.equalsIgnoreCase(responseCode)) {
+        response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
+        response.getParams().setErr("Data not found with ID: " + frameworkId);
+        return response;
+      }
+
+      Map<String, Object> resultMap = (Map<String, Object>) frameworkResponse.get(Constants.RESULT);
+      Map<String, Object> framework = (Map<String, Object>) resultMap.get(Constants.FRAMEWORK);
+
+      List<Map<String, Object>> categories = (List<Map<String, Object>>) framework.get(Constants.CATEGORIES);
+      Map<String, Object> category = null;
+      if (CollectionUtils.isNotEmpty(categories)) {
+        category = categories.stream()
+                .filter(cat -> categoryCode.equalsIgnoreCase((String) cat.get(Constants.CODE)))
+                .findFirst()
+                .orElse(null);
+      }
+      if (MapUtils.isEmpty(category)) {
+        response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
+        response.getParams().setErr("Category not found with code: " + categoryCode);
+        return response;
+      }
+
+
+      // Retrieve terms under the category
+      List<Map<String, Object>> terms = (List<Map<String, Object>>) category.get(Constants.TERMS);
+      Map<String, Object> term = null;
+      if (CollectionUtils.isNotEmpty(terms)) {
+        term = terms.stream()
+                .filter(t -> termCode.equalsIgnoreCase((String) t.get(Constants.CODE)))
+                .findFirst()
+                .orElse(null);
+      }
+      if (MapUtils.isEmpty(term)) {
+        response.setResponseCode(HttpStatus.NOT_FOUND);
+        response.getParams().setErr("Term not found with code: " + termCode);
+        return response;
+      }
+
+      // Check associations for refId
+      List<Map<String, Object>> associations = (List<Map<String, Object>>) term.get(Constants.ASSOCIATIONS);
+      if (CollectionUtils.isNotEmpty(associations)) {
+        boolean refIdExists = associations.stream()
+                .anyMatch(assoc -> refId.equals(assoc.get(Constants.REF_ID)));
+        if (refIdExists) {
+          response.setResponseCode(HttpStatus.CONFLICT);
+          response.getParams().setErr("Term creation is not possible due to existing reference ID.");
+        } else {
+          response.setResponseCode(HttpStatus.NOT_FOUND);
+          response.getResult().put(Constants.FRAMEWORK, framework);
+        }
+      } else {
+        response.setResponseCode(HttpStatus.NOT_FOUND);
+      }
+
+    } catch (Exception e) {
+      log.error("Failed to read framework with ID: " + frameworkId, e);
+      response.getParams().setErr("Failed to read framework: " + e.getMessage());
+      response.getParams().setStatus(Constants.FAILED);
+      response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    return response;
   }
 
   private static Object toJavaObject(JsonNode jsonNode) {

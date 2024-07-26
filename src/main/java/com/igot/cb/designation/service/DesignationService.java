@@ -26,4 +26,6 @@ public interface DesignationService {
       String id);
 
   public CustomResponse searchDesignation(SearchCriteria searchCriteria);
+
+  public ApiResponse frameworkRead(String frameworkId, String categoryCode, String termCode, String refId);
 }
