@@ -220,8 +220,6 @@ public class CiosContentServiceImpl implements CiosContentService {
                 igotContent.setLastUpdatedOn(currentTime);
                 igotContent.setIsActive(Constants.ACTIVE_STATUS);
                 igotContent.setPartnerId(dto.getContentPartner().get("id").asText());
-                String appIcon="https://portal.karmayogiqa.nic.in/content-store/content/do_1140936641201520641494/artifact/do_1140936641201520641494_1720420145273_red-shield-copy-final.jpg";
-                ((ObjectNode) jsonNode.path("content")).put("appIcon", appIcon);
                 ((ObjectNode) jsonNode.path("content")).put("contentId", igotContent.getContentId());
                 ((ObjectNode) jsonNode.path("content")).put(Constants.CREATED_ON, String.valueOf(currentTime));
                 ((ObjectNode) jsonNode.path("content")).put(Constants.LAST_UPDATED_ON, String.valueOf(currentTime));
@@ -237,8 +235,6 @@ public class CiosContentServiceImpl implements CiosContentService {
                 igotContent.setLastUpdatedOn(currentTime);
                 igotContent.setIsActive(Constants.ACTIVE_STATUS);
                 igotContent.setPartnerId(dto.getContentPartner().get("id").asText());
-                String appIcon="https://portal.karmayogiqa.nic.in/content-store/content/do_1140936641201520641494/artifact/do_1140936641201520641494_1720420145273_red-shield-copy-final.jpg";
-                ((ObjectNode) jsonNode.path("content")).put("appIcon", appIcon);
                 ((ObjectNode) jsonNode.path("content")).put("contentId", ciosContentEntity.get().getContentId());
                 ((ObjectNode) jsonNode.path("content")).put(Constants.CREATED_ON, String.valueOf(igotContent.getCreatedOn()));
                 ((ObjectNode) jsonNode.path("content")).put(Constants.LAST_UPDATED_ON, String.valueOf(currentTime));
