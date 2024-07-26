@@ -313,6 +313,11 @@ public class Constants {
     public static final String MASTER = "master";
     public static final String CONTENT_PROVIDER_INDEX_NAME = "content_provider";
     public static final String CONTENT_PARTNER = "contentPartner";
+    public static final String FRAMEWORK_STATUS = "frameworkstatus";
+    public static final String COMPLETED = "Completed";
+    public static final String FRAMEWORK_PUBLISH_WAIT_MSG = "Framework creation request has been published Awaiting processing.";
+    public static final String FRAMEWORK_PROCESS_ALREADY_INITIALISED ="Already this framework creation request is initialised";
+
     private Constants() {
     }
 }
