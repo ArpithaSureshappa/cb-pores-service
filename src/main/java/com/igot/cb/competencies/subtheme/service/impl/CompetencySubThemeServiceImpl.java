@@ -681,6 +681,10 @@ public class CompetencySubThemeServiceImpl implements CompetencySubThemeService 
       Map<String, Object> map = new HashMap<>();
       jsonNode.fields().forEachRemaining(entry -> map.put(entry.getKey(), toJavaObject(entry.getValue())));
       return map;
+    } else if (jsonNode.isArray()) {
+      List<Object> list = new ArrayList<>();
+      jsonNode.forEach(element -> list.add(toJavaObject(element)));
+      return list;
     } else {
       return jsonNode.asText();
     }
