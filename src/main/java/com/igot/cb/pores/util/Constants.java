@@ -313,6 +313,11 @@ public class Constants {
     public static final String MASTER = "master";
     public static final String CONTENT_PROVIDER_INDEX_NAME = "content_provider";
     public static final String CONTENT_PARTNER = "contentPartner";
+    public static final String API_PARTNER_CREATE = "api.partner.create";
+    public static final String API_PARTNER_UPDATE = "api.partner.update";
+    public static final String API_PARTNER_READ = "api.partner.read";
+    public static final String API_PARTNER_DELETE = "api.partner.delete";
+    public static final String API_PARTNER_SEARCH = "api.partner.search";
     private Constants() {
     }
 }

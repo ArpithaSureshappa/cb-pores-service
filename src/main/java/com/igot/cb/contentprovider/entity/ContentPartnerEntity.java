@@ -33,4 +33,6 @@ public class ContentPartnerEntity {
     private Timestamp createdOn;
 
     private Timestamp updatedOn;
+
+    private Boolean isActive;
 }
