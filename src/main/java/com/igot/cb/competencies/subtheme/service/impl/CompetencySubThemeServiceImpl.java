@@ -14,6 +14,7 @@ import com.igot.cb.competencies.subtheme.entity.CompetencySubThemeEntity;
 import com.igot.cb.competencies.subtheme.repository.CompetencySubThemeRepository;
 import com.igot.cb.competencies.subtheme.service.CompetencySubThemeService;
 import com.igot.cb.competencies.theme.enity.CompetencyThemeEntity;
+import com.igot.cb.designation.service.DesignationService;
 import com.igot.cb.playlist.util.ProjectUtil;
 import com.igot.cb.pores.Service.OutboundRequestHandlerServiceImpl;
 import com.igot.cb.pores.cache.CacheService;
@@ -78,6 +79,9 @@ public class CompetencySubThemeServiceImpl implements CompetencySubThemeService 
   private CompetencySubThemeRepository competencySubThemeRepository;
 
   private @Autowired OutboundRequestHandlerServiceImpl outboundRequestHandlerServiceImpl;
+
+  @Autowired
+  private DesignationService designationService;
 
   @Override
   public void loadCompetencySubTheme(MultipartFile file, String token) {
@@ -491,11 +495,14 @@ public class CompetencySubThemeServiceImpl implements CompetencySubThemeService 
       String ref_Id = request.get(Constants.REF_ID).asText();
       String framework = request.get(Constants.FRAMEWORK).asText();
       String category = request.get(Constants.CATEGORY).asText();
+      JsonNode additionalProperties = request.get(Constants.ADDITIONAL_PROPERTIES);
+      String parentCategory = additionalProperties.path(Constants.PARENT_CATEGORY).asText();
+      String termCode = additionalProperties.path(Constants.PREV_TERM_CODE).asText();
       Optional<CompetencySubThemeEntity> designationEntity = competencySubThemeRepository.findByIdAndIsActive(ref_Id, Boolean.TRUE);
       if (designationEntity.isPresent()) {
         CompetencySubThemeEntity designation = designationEntity.get();
         if (designation.getIsActive()) {
-          ApiResponse readResponse = readTerm(ref_Id, framework, category);
+          ApiResponse readResponse = designationService.frameworkRead(framework,parentCategory,termCode,ref_Id);
           if (readResponse == null) {
             response.getParams().setErr("Failed to validate term exists or not.");
             response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -524,12 +531,13 @@ public class CompetencySubThemeServiceImpl implements CompetencySubThemeService 
               reqBodyMap.put(Constants.TITLE, name);
               reqBodyMap.put(Constants.REF_NODES, termIdentifier);
               CustomResponse desgResponse = updateCompSubTheme(objectMapper.valueToTree(reqBodyMap));
-              response.getResult().put(Constants.IDENTIFIER, termIdentifier);
               if (desgResponse.getResponseCode() != HttpStatus.OK) {
                 log.error("Failed to update term: " + response.getParams().getErr());
                 response.getParams().setErr("Failed to update term.");
                 response.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR);
                 response.getParams().setStatus(Constants.FAILED);
+              } else {
+                response.getResult().put(Constants.NODE_ID, termIdentifier);
               }
             } else {
               log.error("Failed to create the term with name: " + ref_Id);

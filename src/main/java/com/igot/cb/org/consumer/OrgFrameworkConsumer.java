@@ -79,6 +79,7 @@ public class OrgFrameworkConsumer {
                 Map<String, Object> map = new HashMap<>();
                 map.put(Constants.FRAMEWORKID, fwName);
                 map.put(Constants.ID, orgId);
+                map.put(Constants.FRAMEWORK_STATUS, Constants.COMPLETED);
                 Map<String, Object> updateOrgDetails = cassandraOperation.updateRecord(Constants.KEYSPACE_SUNBIRD, Constants.ORG_TABLE, map);
                 String updateResponse = (String) updateOrgDetails.get(Constants.RESPONSE);
                 if (!StringUtils.isBlank(updateResponse) && updateResponse.equalsIgnoreCase(Constants.SUCCESS)) {
