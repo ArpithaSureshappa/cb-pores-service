@@ -63,6 +63,13 @@ public class ContentPartnerServiceImpl implements ContentPartnerService {
         payloadValidation.validatePayload(Constants.PAYLOAD_VALIDATION_FILE_CONTENT_PROVIDER, partnerDetails);
         try {
             if (partnerDetails.get(Constants.ID) == null) {
+                Optional<ContentPartnerEntity> optionalEntity=entityRepository.findByContentPartnerName(partnerDetails.get("contentPartnerName").asText());
+                if(optionalEntity.isPresent()){
+                    response.getParams().setErrMsg("Content partner name already present in DB");
+                    response.getParams().setStatus(Constants.FAILED);
+                    response.setResponseCode(HttpStatus.BAD_REQUEST);
+                    return response;
+                }
                 response = ProjectUtil.createDefaultResponse(Constants.API_PARTNER_CREATE);
                 log.info("ContentPartnerServiceImpl::createOrUpdate:creating content partner provider");
                 String id = String.valueOf(UUID.randomUUID());

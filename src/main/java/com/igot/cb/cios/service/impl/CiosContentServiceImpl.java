@@ -252,6 +252,7 @@ public class CiosContentServiceImpl implements CiosContentService {
         List<String> searchTags = new ArrayList<>();
         searchTags.add(formattedData.path("content").get("topic").textValue().toLowerCase());
         searchTags.add(formattedData.path("content").get("name").textValue().toLowerCase());
+        searchTags.add(formattedData.path("content").path("contentPartner").get("contentPartnerName").asText().toLowerCase());
         ArrayNode searchTagsArray = objectMapper.valueToTree(searchTags);
         ((ObjectNode) formattedData.path("content")).set("searchTags", searchTagsArray);
         return formattedData;
