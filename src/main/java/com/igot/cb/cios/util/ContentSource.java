@@ -5,10 +5,10 @@ public enum ContentSource {
     UPGRAD;
 
     public static ContentSource fromProviderName(String providerName) {
-        switch (providerName.toLowerCase()) {
-            case "cornell":
+        switch (providerName) {
+            case "eCornell":
                 return CORNELL;
-            case "upgrad":
+            case "upGrad":
                 return UPGRAD;
             default:
                 throw new RuntimeException("Unknown provider name: " + providerName);

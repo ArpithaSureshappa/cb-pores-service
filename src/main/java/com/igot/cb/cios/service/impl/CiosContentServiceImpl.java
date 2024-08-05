@@ -190,11 +190,11 @@ public class CiosContentServiceImpl implements CiosContentService {
                 CiosContentEntity ciosContentEntity = null;
                 switch (contentSource) {
                     case CORNELL:
-                        log.info("inside cornell data");
+                        log.debug("inside cornell data");
                         Optional<CornellContentEntity> cornellData =
                                 cornellContentRepository.findByExternalId(dto.getContentData().get("content").get("externalId").asText());
                         if (cornellData.isPresent()) {
-                            log.info("data present in external table");
+                            log.info("data present in cornell table");
                             ciosContentEntity = createNewContent(dto);
                             CornellContentEntity externalContentEntity = cornellData.get();
                             externalContentEntity.setIsActive(true);
@@ -202,11 +202,11 @@ public class CiosContentServiceImpl implements CiosContentService {
                         }
                         break;
                     case UPGRAD:
-                        log.info("inside upgrad data");
+                        log.debug("inside upgrad data");
                         Optional<UpgradContentEntity> upgradContent =
                                 upgradContentRepository.findByExternalId(dto.getContentData().get("content").get("externalId").asText());
                         if (upgradContent.isPresent()) {
-                            log.info("data present in external table");
+                            log.info("data present in upgrad table");
                             ciosContentEntity = createNewContent(dto);
                             UpgradContentEntity upgradContentEntity = upgradContent.get();
                             upgradContentEntity.setIsActive(true);
