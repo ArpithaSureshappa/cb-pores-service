@@ -48,6 +48,10 @@ public class CbServerProperties {
   @Value("${elastic.required.field.content.json.path}")
   private String elasticContentJsonPath;
 
+  @Value("${elastic.required.field.content.partner.json.path}")
+  private String elasticContentPartnerJsonPath;
+
+
   @Value("${elastic.required.field.interest.json.path}")
   private String elasticInterestJsonPath;
 
@@ -78,6 +82,9 @@ public class CbServerProperties {
 
   @Value("${kafka.topic.demand.request}")
   private String demandRequestKafkaTopic;
+
+  @Value("${kafka.topic.content.partner.registration}")
+  private String contentPartnerRegistrationTopic;
 
   @Value("${notification.support.mail}")
   private String supportEmail;

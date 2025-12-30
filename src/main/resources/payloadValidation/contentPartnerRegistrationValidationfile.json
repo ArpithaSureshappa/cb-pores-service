@@ -32,6 +32,8 @@
   },
   "required": [
     "contentPartnerName",
+    "contactName",
+    "email",
     "websiteUrl",
     "description"
   ],

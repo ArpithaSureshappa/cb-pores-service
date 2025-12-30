@@ -28,4 +28,9 @@ public class ProjectUtil {
             Constants.CONTENT_TYPE, Constants.APPLICATION_JSON
     );
   }
+  public static void errorResponse(ApiResponse response, String errorMessage, HttpStatus httpStatus) {
+        response.setResponseCode(httpStatus);
+        response.getParams().setErrMsg(errorMessage);
+        response.getParams().setStatus(Constants.FAILED);
+    }
 }

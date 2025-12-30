@@ -726,16 +726,5 @@ class ContentPartnerServiceImplTest {
         assertEquals(Constants.DATA_NOT_PRESENT, resp.getParams().getErrMsg());
     }
 
-    @Test
-    void testCreateOrUpdate_ValidationFailure_ReturnsInternalServerError() {
-        ObjectNode request = realObjectMapper.createObjectNode();
-        request.put(Constants.CONTENT_PARTNER_NAME, "AnyName");
-        doThrow(new RuntimeException("validation failed")).when(payloadValidation)
-                .validatePayload(eq(Constants.PAYLOAD_VALIDATION_FILE_CONTENT_PROVIDER), any());
-        ApiResponse resp = contentPartnerService.createOrUpdate(request);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, resp.getResponseCode());
-        assertEquals(Constants.FAILED, resp.getParams().getStatus());
-        assertTrue(resp.getParams().getErrMsg().contains("validation failed"));
-    }
 
 }

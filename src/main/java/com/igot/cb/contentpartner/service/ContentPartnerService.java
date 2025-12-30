@@ -8,6 +8,8 @@ import com.igot.cb.pores.util.ApiResponse;
 public interface ContentPartnerService {
     ApiResponse createOrUpdate(JsonNode partnerDetails);
 
+    ApiResponse createContentPartner(JsonNode partnerDetails);
+
     ApiResponse read(String id);
 
     ApiResponse searchEntity(SearchCriteria searchCriteria);

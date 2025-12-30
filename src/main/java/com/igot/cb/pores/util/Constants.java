@@ -57,6 +57,7 @@ public class Constants {
     public static final String REQUEST_PAYLOAD = "requestPayload";
     public static final String JWT_SECRET_KEY = "demand_search_result";
     public static final String PAYLOAD_VALIDATION_FILE_CONTENT_PROVIDER = "/payloadValidation/contentProviderValidation.json";
+    public static final String PAYLOAD_VALIDATION_FILE_CONTENT_PARTNER_REGISTRATION = "/payloadValidation/contentPartnerRegistrationValidationfile.json";
     public static final String CONTENT_PROVIDER_ID = "id";
     public static final String INTEREST_COUNT = "interestCount";
     public static final String INTERESTS = "demand_search_result";
@@ -311,8 +312,12 @@ public class Constants {
     public static final String FRAMEWORK = "framework";
     public static final String CHANNELS = "channels";
     public static final String MASTER = "master";
+    public static final String CONTENT_PARTNER_REGISTRATION_INDEX_NAME = "content_provider_registration";
     public static final String CONTENT_PROVIDER_INDEX_NAME = "content_provider_alias";
     public static final String CONTENT_PARTNER = "contentPartner";
+    public static final String PENDING = "PENDING";
+    public static final String APPROVED = "APPROVED";
+    public static final String REJECTED = "REJECTED";
     public static final String CATEGORIES  = "categories";
     public static final String ASSOCIATIONS = "associations";
     public static final String PREV_TERM_CODE = "previousTermCode";
@@ -321,6 +326,7 @@ public class Constants {
     public static final String COMPLETED = "Completed";
     public static final String FRAMEWORK_PUBLISH_WAIT_MSG = "Framework creation request has been published Awaiting processing.";
     public static final String FRAMEWORK_PROCESS_ALREADY_INITIALISED ="Already this framework creation request is initialised";
+    public static final String API_PARTNER_CREATE_UPSERT = "api.partner.upsert";
     public static final String API_PARTNER_CREATE = "api.partner.create";
     public static final String API_PARTNER_UPDATE = "api.partner.update";
     public static final String API_PARTNER_READ = "api.partner.read";
@@ -387,12 +393,37 @@ public class Constants {
     public static final String CONTENT_PARTNER_CREATED = "Content partner created successfully";
     public static final String CONTENT_PARTNER_CACHE_DELETE = "during content partner create Deleting cache for partner code {}";
     public static final String CONTENT_PARTNER_UPDATE_CACHE_DELETE = "during content partner update Deleting cache for partner code {}";
+    public static final String KNOWLEDGE_LEVEL = "knowledgeLevel";
+    public static final String EVENT_STATUS = "status";
+    public static final String EVENT_EMAIL = "email";
+    public static final String EVENT_PARTNER_NAME = "partnerName";
+    public static final String EVENT_REGISTRATION_ID = "registrationId";
+    public static final String STATUS_MESSAGE ="statusMessage";
+    public static final String PARTNER_NAME="name";
+    public static final String CP_REG_SUCCESS_SUBJECT = "Content Partner Registration Successful";
+    public static final String CP_REG_APPROVED_SUBJECT = "Content Partner Registration Approved";
+    public static final String CP_REG_REJECTED_SUBJECT = "Content Partner Registration Rejected";
+    public static final String CP_REG_SUCCESS_MESSAGE = "Your registration has been successfully completed. " + "You can track your status using the Registration ID below.";
+    public static final String CP_REG_APPROVED_MESSAGE = "Your registration has been approved. " + "Our team will connect with you shortly for the next steps.";
+    public static final String CP_REG_REJECTED_MESSAGE = "Your registration has been reviewed and unfortunately has been rejected.";
+    public static final String CONTENT_PARTNER_REG_TEMPLATE = "content_partner_registration_template";
+    public static final String WEBSITE_URL = "websiteUrl";
+    public static final String PHONE_NUMBER ="phone";
+    public static final String CONTENT_PARTNER_CREATE_START = "Creating entry in content partner table for approved registration: {}";
+    public static final String CONTENT_PARTNER_CREATE_SUCCESS = "Successfully created entry in content partner table for ID: {}";
+    public static final String CONTENT_PARTNER_CREATE_FAILED = "Failed to create entry in content partner table. Error: {}";
+    public static final String CONTENT_PARTNER_CREATE_EXCEPTION = "Error while creating entry in content partner table";
+    public static final String INVALID_EMAIL = "Invalid email";
+    public static final String INVALID_ID_OR_EMAIL = "Invalid id or email";
     public static final String DIFFICULTY_LEVEL = "difficultyLevel";
-
     public static final String CHANNEL = "channel";
     public static final String ASCENDING = "ASC";
     public static final String ORDER_BY = "orderBy";
     public static final String ORDER_DIRECTION = "orderDirection";
+    public static final String ERR_ID_OR_EMAIL_REQUIRED = "Either id or email must be provided";
+    public static final String ES_ID_FOUND_FOR_EMAIL = "Found ID in Elasticsearch for email {}: {}";
+    public static final String ES_NO_RECORD_FOR_EMAIL = "No record found in Elasticsearch for email: {}";
+    public static final String ES_ERROR_FETCHING_ID_FOR_EMAIL = "Error fetching ID from Elasticsearch for email: {}";
 
     private Constants() {
     }

@@ -9,9 +9,13 @@
       "type": "string"
     },
     "typeOfUser": {
-      "type": "string",
-      "enum": ["Initiator", "Reviewer", "Decision Maker", "Strategic", "Policy Maker"]
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["Initiator", "Reviewer", "Decision Maker", "Strategic", "Policy Maker"]
+      }
     },
+
     "learningMode": {
       "type": "string",
       "enum": ["self-paced", "instructor-led"]

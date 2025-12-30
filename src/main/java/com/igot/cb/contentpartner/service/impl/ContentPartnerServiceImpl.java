@@ -150,14 +150,22 @@ public class ContentPartnerServiceImpl implements ContentPartnerService {
         });
     }
 
-
-    private ApiResponse createContentPartner(JsonNode partnerDetails) {
+    @Override
+    public ApiResponse createContentPartner(JsonNode partnerDetails) {
         log.info("ContentPartnerServiceImpl::createContentPartner");
         ApiResponse response = ProjectUtil.createDefaultResponse(Constants.API_PARTNER_CREATE);
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-        payloadValidation.validatePayload(Constants.PAYLOAD_VALIDATION_FILE_CONTENT_PROVIDER, partnerDetails);
+        log.info("Payload for validation: {}", partnerDetails);
+        String id = null;
+        if (partnerDetails != null && partnerDetails.hasNonNull(Constants.ID)) {
+            id = partnerDetails.path(Constants.ID).asText();
+            payloadValidation.validatePayload(Constants.CONTENT_PARTNER_FILE_JSON, partnerDetails);
+        }else {
+            id = UUID.randomUUID().toString();
+            payloadValidation.validatePayload(Constants.PAYLOAD_VALIDATION_FILE_CONTENT_PROVIDER, partnerDetails);
+        }
         String partnerName = partnerDetails.path(Constants.CONTENT_PARTNER_NAME).asText();
-        String partnerCode = partnerDetails.path(Constants.PARTNERCODE).asText();
+        String partnerCode = partnerDetails.path(Constants.PARTNERCODE).asText("");
         boolean hasPartnerCode = partnerCode != null && !partnerCode.isEmpty();
         Optional<ContentPartnerEntity> existingByName = entityRepository.findByContentPartnerName(partnerName);
         if (existingByName.isPresent()) {
@@ -176,7 +184,6 @@ public class ContentPartnerServiceImpl implements ContentPartnerService {
             response.setResponseCode(HttpStatus.BAD_REQUEST);
             return response;
         }
-        String id = String.valueOf(UUID.randomUUID());
         ((ObjectNode) partnerDetails).set(Constants.PARTNERCODE, partnerDetails.get("partnerCode"));
         ((ObjectNode) partnerDetails).put(Constants.ID, id);
         ((ObjectNode) partnerDetails).put(Constants.IS_ACTIVE, Constants.ACTIVE_STATUS);
@@ -206,7 +213,8 @@ public class ContentPartnerServiceImpl implements ContentPartnerService {
         Map<String, Object> result = objectMapper.convertValue(saveJsonEntity, Map.class);
         cacheService.putCache(saveJsonEntity.getId(), result);
         if (!partnerDetails.path(Constants.PARTNERCODE).isMissingNode()) {
-            cacheService.putCache(partnerDetails.path(Constants.PARTNERCODE).asText(), result);
+            log.info(Constants.CONTENT_PARTNER_CACHE_DELETE, partnerDetails.path(Constants.PARTNERCODE).asText());
+            cacheService.deleteCache(partnerDetails.get(Constants.PARTNERCODE).asText());
         }
         log.info(Constants.CONTENT_PARTNER_CREATED);
         response.setResult(result);
