@@ -741,14 +741,16 @@ class InterestServiceImplTest {
         // Arrange
         Object requestPayload = new Object();
         String serializedPayload = "serialized_payload";
+        String jwtSecret = "demand_search_result";
         when(objectMapper.writeValueAsString(requestPayload)).thenReturn(serializedPayload);
+        when(cbServerProperties.getJwtSecretKey()).thenReturn(jwtSecret);
 
         // Act
         String result = interestService.generateRedisJwtTokenKey(requestPayload);
 
         // Assert
         assertNotNull(result);
-        JWT.require(Algorithm.HMAC256(Constants.JWT_SECRET_KEY))
+        JWT.require(Algorithm.HMAC256(jwtSecret))
            .build()
            .verify(result);
     }

@@ -57,7 +57,6 @@ public class Constants {
     public static final String KEYWORD = ".keyword";
     public static final String ASC = "asc";
     public static final String REQUEST_PAYLOAD = "requestPayload";
-    public static final String JWT_SECRET_KEY = "demand_search_result";
     public static final String PAYLOAD_VALIDATION_FILE_CONTENT_PROVIDER = "/payloadValidation/contentProviderValidation.json";
     public static final String PAYLOAD_VALIDATION_FILE_CONTENT_PARTNER_REGISTRATION = "/payloadValidation/contentPartnerRegistrationValidationfile.json";
     public static final String CONTENT_PROVIDER_ID = "id";
