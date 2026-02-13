@@ -360,8 +360,6 @@ class DemandServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_2() {
-        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
-
         Object requestPayload = null;
         String result = demandService.generateRedisJwtTokenKey(requestPayload);
         assertEquals("", result);

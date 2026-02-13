@@ -1570,6 +1570,7 @@ class DesignationServiceImplTest {
         searchCriteria.setSearchString("developer");
 
         // Simulate Redis has no cached result
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(null);
 

@@ -1412,6 +1412,7 @@ class CiosContentServiceImplTest {
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult expectedResult = new SearchResult();
 
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(expectedResult);
 
@@ -1447,6 +1448,7 @@ class CiosContentServiceImplTest {
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
 
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(null);
 

@@ -670,7 +670,6 @@ class CompetencyThemeServiceImplTest {
         cbServerPropertiesField.setAccessible(true);
         cbServerPropertiesField.set(service, cbServerPropertiesMock);
         
-        when(cbServerPropertiesMock.getJwtSecretKey()).thenReturn("demand_search_result");
         String result = service.generateRedisJwtTokenKey(null);
         assertEquals("", result, "Should return an empty string when requestPayload is null");
     }

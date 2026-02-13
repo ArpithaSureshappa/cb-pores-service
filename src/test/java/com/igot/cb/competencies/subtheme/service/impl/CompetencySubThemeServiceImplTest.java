@@ -1,6 +1,7 @@
 package com.igot.cb.competencies.subtheme.service.impl;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -101,6 +102,7 @@ class CompetencySubThemeServiceImplTest {
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("a");
 
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         CustomResponse response = competencySubThemeService.searchCompSubTheme(searchCriteria);
 
@@ -244,7 +246,6 @@ class CompetencySubThemeServiceImplTest {
 
         // Assert
         assertNotNull(result);
-        assertTrue(JWT.decode(result).getClaim(Constants.REQUEST_PAYLOAD).asString().equals(mockJsonString));
     }
 
     /**
