@@ -320,7 +320,7 @@ public class DemandServiceImpl implements DemandService {
         if (requestPayload != null) {
             try {
                 String reqJsonString = objectMapper.writeValueAsString(requestPayload);
-                return JWT.create().withClaim(Constants.REQUEST_PAYLOAD, reqJsonString).sign(Algorithm.HMAC256(Constants.JWT_SECRET_KEY));
+                return JWT.create().withClaim(Constants.REQUEST_PAYLOAD, reqJsonString).sign(Algorithm.HMAC256(cbServerProperties.getJwtSecretKey()));
             } catch (JsonProcessingException e) {
                 logger.error("Error occurred while converting json object to json string", e);
             }

@@ -741,14 +741,16 @@ class InterestServiceImplTest {
         // Arrange
         Object requestPayload = new Object();
         String serializedPayload = "serialized_payload";
+        String jwtSecret = "demand_search_result";
         when(objectMapper.writeValueAsString(requestPayload)).thenReturn(serializedPayload);
+        when(cbServerProperties.getJwtSecretKey()).thenReturn(jwtSecret);
 
         // Act
         String result = interestService.generateRedisJwtTokenKey(requestPayload);
 
         // Assert
         assertNotNull(result);
-        JWT.require(Algorithm.HMAC256(Constants.JWT_SECRET_KEY))
+        JWT.require(Algorithm.HMAC256(jwtSecret))
            .build()
            .verify(result);
     }
@@ -833,6 +835,7 @@ class InterestServiceImplTest {
      */
     @Test
     void test_searchDemand_3() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("validSearch");
@@ -858,6 +861,7 @@ class InterestServiceImplTest {
      */
     @Test
     void test_searchDemand_shortSearchString() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("ab");
@@ -873,6 +877,7 @@ class InterestServiceImplTest {
      */
     @Test
     void test_searchDemand_whenResultFoundInRedis() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult cachedResult = new SearchResult();

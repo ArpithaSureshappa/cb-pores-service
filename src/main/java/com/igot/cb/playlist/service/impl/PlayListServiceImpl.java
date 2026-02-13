@@ -864,7 +864,7 @@ public class PlayListServiceImpl implements PlayListSerive {
         String reqJsonString = objectMapper.writeValueAsString(requestPayload);
         return JWT.create()
             .withClaim(Constants.REQUEST_PAYLOAD, reqJsonString)
-            .sign(Algorithm.HMAC256(Constants.JWT_SECRET_KEY));
+            .sign(Algorithm.HMAC256(cbServerProperties.getJwtSecretKey()));
       } catch (JsonProcessingException e) {
         logger.error("Error occurred while converting json object to json string", e);
       }

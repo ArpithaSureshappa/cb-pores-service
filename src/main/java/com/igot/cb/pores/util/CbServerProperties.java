@@ -190,4 +190,11 @@ public class CbServerProperties {
       return Arrays.asList(orgHierarchyCreateRoles.split(","));
     }
 
+    @Value("${jwt.secret.key}")
+    private String jwtSecretKey;
+
+    public String getJwtSecretKey() {
+        return jwtSecretKey;
+    }
+
 }

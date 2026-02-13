@@ -648,6 +648,7 @@ class DesignationServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_2() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         String result = designationService.generateRedisJwtTokenKey(null);
         assertEquals("", result);
     }
@@ -670,6 +671,7 @@ class DesignationServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_whenRequestPayloadNotNull() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         Object requestPayload = new Object();
         String mockJsonString = "{\"key\":\"value\"}";
@@ -878,6 +880,7 @@ class DesignationServiceImplTest {
      */
     @Test
     void test_searchDesignation_1() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult cachedResult = new SearchResult();
@@ -901,6 +904,7 @@ class DesignationServiceImplTest {
     */
     @Test
     void test_searchDesignation_2() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         SearchCriteria searchCriteria = mock(SearchCriteria.class);
@@ -920,6 +924,7 @@ class DesignationServiceImplTest {
      */
     @Test
     void test_searchDesignation_3() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("Valid Search");
@@ -945,6 +950,7 @@ class DesignationServiceImplTest {
      */
     @Test
     void test_searchDesignation_shortSearchString() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("a");
@@ -1564,6 +1570,7 @@ class DesignationServiceImplTest {
         searchCriteria.setSearchString("developer");
 
         // Simulate Redis has no cached result
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(null);
 

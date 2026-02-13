@@ -615,16 +615,26 @@ class CompetencyThemeServiceImplTest {
      * Verifies that a JWT token is generated and returned.
      */
     @Test
-    void test_generateRedisJwtTokenKey_1() {
+    void test_generateRedisJwtTokenKey_1() throws Exception {
         CompetencyThemeServiceImpl service = new CompetencyThemeServiceImpl();
         ObjectMapper objectMapper = mock(ObjectMapper.class);
-        service.objectMapper = objectMapper;
+        CbServerProperties cbServerPropertiesMock = mock(CbServerProperties.class);
+        
+        // Use reflection to set private fields
+        java.lang.reflect.Field objectMapperField = CompetencyThemeServiceImpl.class.getDeclaredField("objectMapper");
+        objectMapperField.setAccessible(true);
+        objectMapperField.set(service, objectMapper);
+        
+        java.lang.reflect.Field cbServerPropertiesField = CompetencyThemeServiceImpl.class.getDeclaredField("cbServerProperties");
+        cbServerPropertiesField.setAccessible(true);
+        cbServerPropertiesField.set(service, cbServerPropertiesMock);
 
         Object requestPayload = new Object();
         String reqJsonString = "{\"key\":\"value\"}";
 
         try {
             when(objectMapper.writeValueAsString(requestPayload)).thenReturn(reqJsonString);
+            when(cbServerPropertiesMock.getJwtSecretKey()).thenReturn("demand_search_result");
 
             String result = service.generateRedisJwtTokenKey(requestPayload);
 
@@ -651,8 +661,15 @@ class CompetencyThemeServiceImplTest {
      * Expected to return an empty string
      */
     @Test
-    void test_generateRedisJwtTokenKey_withNullPayload() {
+    void test_generateRedisJwtTokenKey_withNullPayload() throws Exception {
         CompetencyThemeServiceImpl service = new CompetencyThemeServiceImpl();
+        CbServerProperties cbServerPropertiesMock = mock(CbServerProperties.class);
+        
+        // Use reflection to set private field
+        java.lang.reflect.Field cbServerPropertiesField = CompetencyThemeServiceImpl.class.getDeclaredField("cbServerProperties");
+        cbServerPropertiesField.setAccessible(true);
+        cbServerPropertiesField.set(service, cbServerPropertiesMock);
+        
         String result = service.generateRedisJwtTokenKey(null);
         assertEquals("", result, "Should return an empty string when requestPayload is null");
     }
@@ -1222,6 +1239,7 @@ class CompetencyThemeServiceImplTest {
      */
     @Test
     void test_searchCompTheme_1() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult mockSearchResult = new SearchResult();
@@ -1247,6 +1265,7 @@ class CompetencyThemeServiceImplTest {
      */
     @Test
     void test_searchCompTheme_2() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("a");
@@ -1264,7 +1283,7 @@ class CompetencyThemeServiceImplTest {
      */
     @Test
     void test_searchCompTheme_3() throws Exception {
-        MockitoAnnotations.openMocks(this);
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
 
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
@@ -1297,6 +1316,7 @@ class CompetencyThemeServiceImplTest {
     */
     @Test
     void test_searchCompTheme_shortSearchString() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("ab");

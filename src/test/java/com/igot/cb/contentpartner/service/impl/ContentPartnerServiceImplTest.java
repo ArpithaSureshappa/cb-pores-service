@@ -437,6 +437,7 @@ class ContentPartnerServiceImplTest {
      */
     @Test
     void test_searchEntity_2() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("validSearchString");
@@ -487,6 +488,7 @@ class ContentPartnerServiceImplTest {
 
     @Test
     void test_searchEntity_CacheHit() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("validSearchString");
 

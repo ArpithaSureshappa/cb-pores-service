@@ -342,7 +342,7 @@ class DemandServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_1(){
-        MockitoAnnotations.openMocks(this);
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
 
         Object requestPayload = new Object();
 
@@ -360,7 +360,6 @@ class DemandServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_2() {
-
         Object requestPayload = null;
         String result = demandService.generateRedisJwtTokenKey(requestPayload);
         assertEquals("", result);
@@ -510,6 +509,7 @@ class DemandServiceImplTest {
      */
     @Test
     void test_searchDemand_1() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult mockSearchResult = new SearchResult();
@@ -536,6 +536,7 @@ class DemandServiceImplTest {
      */
     @Test
     void test_searchDemand_3() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("valid search");
@@ -572,6 +573,7 @@ class DemandServiceImplTest {
      */
     @Test
     void test_searchDemand_4() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString(null);
@@ -597,6 +599,7 @@ class DemandServiceImplTest {
      */
     @Test
     void test_searchDemand_shortSearchString() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("ab");
 

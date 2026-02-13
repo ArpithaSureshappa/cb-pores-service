@@ -79,6 +79,9 @@ class PlayListServiceImplTest {
     @Mock
     private ValueOperations<String, SearchResult> valueOperations;
 
+    @Mock
+    private com.igot.cb.pores.util.CbServerProperties cbServerProperties;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -343,7 +346,7 @@ class PlayListServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_1() {
-        MockitoAnnotations.initMocks(this);
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
 
         Object requestPayload = new Object();
         String jsonString = "{\"key\":\"value\"}";
@@ -365,6 +368,7 @@ class PlayListServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_2() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         
         String result = playListService.generateRedisJwtTokenKey(null);
         assertEquals("", result);
@@ -595,6 +599,7 @@ class PlayListServiceImplTest {
      */
     @Test
     void test_searchPlayList_1() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult mockSearchResult = new SearchResult();
@@ -622,6 +627,7 @@ class PlayListServiceImplTest {
      */
     @Test
     void test_searchPlayList_2() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("test search");
@@ -655,6 +661,7 @@ class PlayListServiceImplTest {
      */
     @Test
     void test_searchPlayList_3(){
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString(null);
