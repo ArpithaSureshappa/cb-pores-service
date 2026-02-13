@@ -193,4 +193,8 @@ public class CbServerProperties {
     @Value("${jwt.secret.key}")
     private String jwtSecretKey;
 
+    public String getJwtSecretKey() {
+        return jwtSecretKey;
+    }
+
 }
