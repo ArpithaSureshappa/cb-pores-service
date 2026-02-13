@@ -1,0 +1,49 @@
+{
+  "id": {
+    "type": "keyword"
+  },
+  "applicationId": {
+    "type": "keyword"
+  },
+  "contentPartnerName": {
+    "type": "text"
+  },
+  "contactName": {
+    "type": "text"
+  },
+  "email": {
+    "type": "keyword"
+  },
+  "phone": {
+    "type": "keyword"
+  },
+  "websiteUrl": {
+    "type": "text"
+  },
+  "description": {
+    "type": "text"
+  },
+  "status": {
+    "type": "text"
+  },
+  "comment": {
+    "type": "text"
+  },
+  "searchTags": {
+    "type": "keyword"
+  },
+  "createdOn": {
+    "type": "date",
+    "format": ["yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "epoch_millis"]
+  },
+  "createdBy": {
+    "type": "keyword"
+  },
+  "updatedOn": {
+    "type": "date",
+    "format": ["yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "epoch_millis"]
+  },
+  "updatedBy": {
+    "type": "keyword"
+  }
+}
