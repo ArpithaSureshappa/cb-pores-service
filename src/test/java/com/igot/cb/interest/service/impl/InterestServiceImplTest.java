@@ -835,6 +835,7 @@ class InterestServiceImplTest {
      */
     @Test
     void test_searchDemand_3() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("validSearch");
@@ -860,6 +861,7 @@ class InterestServiceImplTest {
      */
     @Test
     void test_searchDemand_shortSearchString() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("ab");
@@ -875,6 +877,7 @@ class InterestServiceImplTest {
      */
     @Test
     void test_searchDemand_whenResultFoundInRedis() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult cachedResult = new SearchResult();

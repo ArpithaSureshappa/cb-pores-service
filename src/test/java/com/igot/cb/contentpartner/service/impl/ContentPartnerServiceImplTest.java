@@ -462,7 +462,6 @@ class ContentPartnerServiceImplTest {
 
     @Test
     void test_searchEntity_shortSearchString() {
-        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("a");
 
@@ -478,7 +477,6 @@ class ContentPartnerServiceImplTest {
      */
     @Test
     void test_searchEntity_shortSearchString_2() {
-        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("a");
 
