@@ -79,6 +79,9 @@ class PlayListServiceImplTest {
     @Mock
     private ValueOperations<String, SearchResult> valueOperations;
 
+    @Mock
+    private com.igot.cb.pores.util.CbServerProperties cbServerProperties;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -343,7 +346,6 @@ class PlayListServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_1() {
-        MockitoAnnotations.initMocks(this);
         when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
 
         Object requestPayload = new Object();

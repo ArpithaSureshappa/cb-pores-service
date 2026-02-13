@@ -342,7 +342,6 @@ class DemandServiceImplTest {
      */
     @Test
     void test_generateRedisJwtTokenKey_1(){
-        MockitoAnnotations.openMocks(this);
         when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
 
         Object requestPayload = new Object();
