@@ -619,12 +619,15 @@ class CompetencyThemeServiceImplTest {
         CompetencyThemeServiceImpl service = new CompetencyThemeServiceImpl();
         ObjectMapper objectMapper = mock(ObjectMapper.class);
         service.objectMapper = objectMapper;
+        CbServerProperties cbServerProperties = mock(CbServerProperties.class);
+        service.cbServerProperties = cbServerProperties;
 
         Object requestPayload = new Object();
         String reqJsonString = "{\"key\":\"value\"}";
 
         try {
             when(objectMapper.writeValueAsString(requestPayload)).thenReturn(reqJsonString);
+            when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
 
             String result = service.generateRedisJwtTokenKey(requestPayload);
 
@@ -653,6 +656,9 @@ class CompetencyThemeServiceImplTest {
     @Test
     void test_generateRedisJwtTokenKey_withNullPayload() {
         CompetencyThemeServiceImpl service = new CompetencyThemeServiceImpl();
+        CbServerProperties cbServerProperties = mock(CbServerProperties.class);
+        service.cbServerProperties = cbServerProperties;
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         String result = service.generateRedisJwtTokenKey(null);
         assertEquals("", result, "Should return an empty string when requestPayload is null");
     }
@@ -1222,6 +1228,7 @@ class CompetencyThemeServiceImplTest {
      */
     @Test
     void test_searchCompTheme_1() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult mockSearchResult = new SearchResult();
@@ -1247,6 +1254,7 @@ class CompetencyThemeServiceImplTest {
      */
     @Test
     void test_searchCompTheme_2() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("a");
@@ -1265,6 +1273,7 @@ class CompetencyThemeServiceImplTest {
     @Test
     void test_searchCompTheme_3() throws Exception {
         MockitoAnnotations.openMocks(this);
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
 
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
@@ -1297,6 +1306,7 @@ class CompetencyThemeServiceImplTest {
     */
     @Test
     void test_searchCompTheme_shortSearchString() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("ab");

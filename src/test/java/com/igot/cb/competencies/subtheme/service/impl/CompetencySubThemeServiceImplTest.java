@@ -228,6 +228,7 @@ class CompetencySubThemeServiceImplTest {
     @Test
     void test_generateRedisJwtTokenKey_1() {
         MockitoAnnotations.openMocks(this);
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
 
         // Arrange
         Object requestPayload = new Object();
@@ -506,6 +507,7 @@ class CompetencySubThemeServiceImplTest {
      */
     @Test
     void test_searchCompSubTheme_1() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult mockSearchResult = new SearchResult();
@@ -531,6 +533,7 @@ class CompetencySubThemeServiceImplTest {
      */
     @Test
     void test_searchCompSubTheme_3() throws Exception {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("valid search");
@@ -556,6 +559,7 @@ class CompetencySubThemeServiceImplTest {
      */
     @Test
     void test_searchCompSubTheme_shortSearchString() {
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 //        when(valueOperations.get(anyString())).thenReturn(null);
         // Arrange

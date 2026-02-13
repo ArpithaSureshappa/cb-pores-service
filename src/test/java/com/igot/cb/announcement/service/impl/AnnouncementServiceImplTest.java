@@ -313,6 +313,7 @@ class AnnouncementServiceImplTest {
         MockitoAnnotations.openMocks(this);
 
         Object requestPayload = new Object();
+        when(serverProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(objectMapper.writeValueAsString(requestPayload)).thenThrow(JsonProcessingException.class);
 
         String result = announcementService.generateRedisJwtTokenKey(requestPayload);
@@ -342,6 +343,7 @@ class AnnouncementServiceImplTest {
         Object requestPayload = new Object();
         String reqJsonString = "{\"key\":\"value\"}";
 
+        when(serverProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(objectMapper.writeValueAsString(requestPayload)).thenReturn(reqJsonString);
 
         String result = announcementService.generateRedisJwtTokenKey(requestPayload);
@@ -414,6 +416,7 @@ class AnnouncementServiceImplTest {
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("ab");
 
+        when(serverProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         CustomResponse response = announcementService.searchAnnouncement(searchCriteria);
 
@@ -456,6 +459,7 @@ class AnnouncementServiceImplTest {
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(null);
 
+        when(serverProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(serverProperties.getAnnouncementDefaultSearchPageSize()).thenReturn(10);
 
         SearchResult mockSearchResult = new SearchResult();
@@ -552,6 +556,7 @@ class AnnouncementServiceImplTest {
         filterCriteria.put("someKey", "someValue");
         searchCriteria.setFilterCriteriaMap((HashMap<String, Object>) filterCriteria);
 
+        when(serverProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         ValueOperations<String, SearchResult> valueOperations = mock(ValueOperations.class);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(null);

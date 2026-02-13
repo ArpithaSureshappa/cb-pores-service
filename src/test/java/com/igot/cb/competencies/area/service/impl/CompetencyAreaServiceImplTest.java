@@ -243,6 +243,7 @@ class CompetencyAreaServiceImplTest {
         Object requestPayload = new Object();
 
         try {
+            when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
             when(objectMapper.writeValueAsString(any())).thenReturn("{}");
 
             String result = competencyAreaService.generateRedisJwtTokenKey(requestPayload);
@@ -474,6 +475,7 @@ class CompetencyAreaServiceImplTest {
         SearchCriteria searchCriteria = new SearchCriteria();
         searchCriteria.setSearchString("validSearchString");
 
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         ValueOperations<String, SearchResult> valueOperations = Mockito.mock(ValueOperations.class);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(any())).thenReturn(null);
@@ -500,6 +502,7 @@ class CompetencyAreaServiceImplTest {
         // Arrange
         SearchCriteria searchCriteria = new SearchCriteria();
         SearchResult cachedResult = new SearchResult();
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         when(valueOperations.get(anyString())).thenReturn(cachedResult);
 

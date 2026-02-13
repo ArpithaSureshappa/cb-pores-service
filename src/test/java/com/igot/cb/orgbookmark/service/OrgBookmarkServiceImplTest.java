@@ -67,6 +67,7 @@ class OrgBookmarkServiceImplTest {
     @BeforeEach
     void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
+        when(cbServerProperties.getJwtSecretKey()).thenReturn("demand_search_result");
         ObjectMapper mapper = new ObjectMapper();
         String json = """
         {
