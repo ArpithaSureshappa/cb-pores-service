@@ -619,7 +619,7 @@ public class EsUtilServiceImpl implements EsUtilService {
         if (isNotBlank(searchCriteria.getStartsWith()) &&
                 isNotBlank(searchCriteria.getStartsWithField())) {
             boolQuery.must(Query.of(q -> q.prefix(p -> p
-                    .field(searchCriteria.getStartsWithField())
+                    .field(resolveField(searchCriteria.getStartsWithField()))
                     .value(searchCriteria.getStartsWith())
             )));
         }

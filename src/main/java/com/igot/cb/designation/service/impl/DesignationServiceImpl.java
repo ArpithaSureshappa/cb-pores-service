@@ -9,15 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.igot.cb.competencies.subtheme.repository.CompetencySubThemeRepository;
-import com.igot.cb.competencies.theme.repository.CompetencyThemeRepository;
 import com.igot.cb.authentication.util.AccessTokenValidator;
-import com.igot.cb.competencies.subtheme.entity.CompetencySubThemeEntity;
 import com.igot.cb.designation.entity.DesignationEntity;
 import com.igot.cb.designation.repository.DesignationRepository;
 import com.igot.cb.designation.service.DesignationService;
-import com.igot.cb.org.service.OrgService;
-import com.igot.cb.org.service.impl.OrgServiceImpl;
 import com.igot.cb.playlist.util.ProjectUtil;
 import com.igot.cb.pores.Service.OutboundRequestHandlerServiceImpl;
 import com.igot.cb.pores.cache.CacheService;
@@ -25,14 +20,9 @@ import com.igot.cb.pores.dto.CustomResponse;
 import com.igot.cb.pores.elasticsearch.service.EsUtilService;
 import com.igot.cb.pores.exceptions.CustomException;
 import com.igot.cb.pores.util.*;
-import com.igot.cb.interest.service.impl.InterestServiceImpl;
-import com.igot.cb.pores.cache.CacheService;
-import com.igot.cb.pores.dto.CustomResponse;
 import com.igot.cb.pores.dto.RespParam;
 import com.igot.cb.pores.elasticsearch.dto.SearchCriteria;
 import com.igot.cb.pores.elasticsearch.dto.SearchResult;
-import com.igot.cb.pores.elasticsearch.service.EsUtilService;
-import com.igot.cb.pores.exceptions.CustomException;
 import com.igot.cb.pores.util.CbServerProperties;
 import com.igot.cb.pores.util.Constants;
 import com.igot.cb.pores.util.PayloadValidation;
@@ -595,19 +585,20 @@ public class DesignationServiceImpl implements DesignationService {
       }
     try {
       if (searchCriteria.getStartsWith() != null && StringUtils.isNotBlank(searchCriteria.getStartsWith())) {
-        searchCriteria.setStartsWithField(Constants.DESIGNATION+Constants.KEYWORD);
+        searchCriteria.setStartsWithField(Constants.DESIGNATION);
       }
       searchResult =
           esUtilService.searchDocumentsV2(Constants.DESIGNATION_INDEX_NAME, searchCriteria);
+      redisTemplate.opsForValue()
+              .set(generateRedisJwtTokenKey(searchCriteria), searchResult, searchResultRedisTtl,
+                      TimeUnit.SECONDS);
       response.getResult().put(Constants.RESULT, searchResult);
       createSuccessResponse(response);
       return response;
     } catch (Exception e) {
       createErrorResponse(response, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
           Constants.FAILED_CONST);
-      redisTemplate.opsForValue()
-          .set(generateRedisJwtTokenKey(searchCriteria), searchResult, searchResultRedisTtl,
-              TimeUnit.SECONDS);
+      log.info("DesignationServiceImpl::searchDesignation::error occurred while searching the designation",response);
       return response;
     }
   }
