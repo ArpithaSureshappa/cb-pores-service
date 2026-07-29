@@ -595,19 +595,19 @@ public class DesignationServiceImpl implements DesignationService {
       }
     try {
       if (searchCriteria.getStartsWith() != null && StringUtils.isNotBlank(searchCriteria.getStartsWith())) {
-        searchCriteria.setStartsWithField(Constants.DESIGNATION+Constants.KEYWORD);
+        searchCriteria.setStartsWithField(Constants.DESIGNATION);
       }
       searchResult =
           esUtilService.searchDocumentsV2(Constants.DESIGNATION_INDEX_NAME, searchCriteria);
+      redisTemplate.opsForValue()
+              .set(generateRedisJwtTokenKey(searchCriteria), searchResult, searchResultRedisTtl,
+                      TimeUnit.SECONDS);
       response.getResult().put(Constants.RESULT, searchResult);
       createSuccessResponse(response);
       return response;
     } catch (Exception e) {
       createErrorResponse(response, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
           Constants.FAILED_CONST);
-      redisTemplate.opsForValue()
-          .set(generateRedisJwtTokenKey(searchCriteria), searchResult, searchResultRedisTtl,
-              TimeUnit.SECONDS);
       return response;
     }
   }
