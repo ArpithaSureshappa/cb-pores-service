@@ -734,7 +734,7 @@ public class CiosContentServiceImpl implements CiosContentService {
             log.warn("Content validation failed for contentId: {}", contentNode.path(Constants.CONTENT_ID).asText());
             return false;
         }
-        //apiCallToCiosSecondaryDbForUpdateData(jsonNode);
+        apiCallToCiosSecondaryDbForUpdateData(jsonNode);
         CiosContentEntity ciosContentEntity = createNewContent(jsonNode, Constants.ACTIVE_STATUS, Constants.LIVE);
         ciosRepository.save(ciosContentEntity);
         log.info("Id of content created: {}", ciosContentEntity.getContentId());
