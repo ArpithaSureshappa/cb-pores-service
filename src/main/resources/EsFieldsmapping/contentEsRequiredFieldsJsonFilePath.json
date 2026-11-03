@@ -75,5 +75,8 @@
   },
   "requiredKarmaPoints": {
     "type": "long"
+  },
+  "requiredKarmaCoins": {
+    "type": "long"
   }
 }

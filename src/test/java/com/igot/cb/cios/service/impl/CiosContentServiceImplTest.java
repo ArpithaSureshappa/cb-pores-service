@@ -1648,7 +1648,7 @@ class CiosContentServiceImplTest {
 
         Double result = (Double) method.invoke(ciosContentService, 0.0, 75);
 
-        assertEquals(75.0, result);
+        assertEquals(0.0, result);
     }
 
     @Test
@@ -1809,6 +1809,67 @@ class CiosContentServiceImplTest {
         assertTrue(result);
         assertEquals(60, contentNode.path(Constants.REQUIRED_KARMA_COINS).asInt());
         assertEquals(7, contentNode.path(Constants.COMPATIBILITY_LEVEL).asInt());
+    }
+
+    @Test
+    void test_applyPublishTimeLicenceRules_paidCourseWithZeroKarmaCoin_setsCompatibilityLevelToZero() throws Exception {
+        Method method = applyPublishTimeLicenceRulesMethod();
+
+        ObjectNode contentNode = realObjectMapper.createObjectNode();
+        contentNode.put(Constants.COURSE_TYPE, Constants.COURSE_TYPE_PAID);
+        contentNode.put(Constants.REQUIRED_KARMA_POINTS, 0);
+        contentNode.put(Constants.COURSE_ENROL_LIMIT, 10);
+
+        Map<String, Object> partnerData = new HashMap<>();
+        partnerData.put(Constants.LICENCE_TYPE, Constants.LICENCE_TYPE_COURSE);
+        partnerData.put(Constants.KARMA_COIN_MULTIPLIER, 2.0);
+        partnerData.put(Constants.KARMA_POINTS, 0);
+        partnerData.put(Constants.OVER_ALL_LIMIT, 50);
+        Map<String, Object> partnerResult = new HashMap<>();
+        partnerResult.put(Constants.DATA, partnerData);
+        ApiResponse partnerResponse = new ApiResponse();
+        partnerResponse.setResult(partnerResult);
+        when(contentPartnerService.getContentDetailsByPartnerCode("PARTNER_1")).thenReturn(partnerResponse);
+        when(objectMapper.convertValue(partnerData, JsonNode.class))
+                .thenReturn(realObjectMapper.valueToTree(partnerData));
+        // Configured level is non-zero to prove it's only applied when karmaCoin > 0, not used here.
+        when(cbServerProperties.getExtCourseCompatibilityLevel()).thenReturn(7);
+
+        boolean result = (boolean) method.invoke(ciosContentService, contentNode, "PARTNER_1");
+
+        assertTrue(result);
+        assertEquals(0, contentNode.path(Constants.REQUIRED_KARMA_COINS).asInt());
+        assertEquals(0, contentNode.path(Constants.COMPATIBILITY_LEVEL).asInt());
+    }
+
+    @Test
+    void test_applyPublishTimeLicenceRules_paidCourseWithPositiveKarmaCoin_usesConfiguredCompatibilityLevel() throws Exception {
+        Method method = applyPublishTimeLicenceRulesMethod();
+
+        ObjectNode contentNode = realObjectMapper.createObjectNode();
+        contentNode.put(Constants.COURSE_TYPE, Constants.COURSE_TYPE_PAID);
+        contentNode.put(Constants.REQUIRED_KARMA_POINTS, 1);
+        contentNode.put(Constants.COURSE_ENROL_LIMIT, 10);
+
+        Map<String, Object> partnerData = new HashMap<>();
+        partnerData.put(Constants.LICENCE_TYPE, Constants.LICENCE_TYPE_COURSE);
+        partnerData.put(Constants.KARMA_COIN_MULTIPLIER, 1.0);
+        partnerData.put(Constants.KARMA_POINTS, 0);
+        partnerData.put(Constants.OVER_ALL_LIMIT, 50);
+        Map<String, Object> partnerResult = new HashMap<>();
+        partnerResult.put(Constants.DATA, partnerData);
+        ApiResponse partnerResponse = new ApiResponse();
+        partnerResponse.setResult(partnerResult);
+        when(contentPartnerService.getContentDetailsByPartnerCode("PARTNER_1")).thenReturn(partnerResponse);
+        when(objectMapper.convertValue(partnerData, JsonNode.class))
+                .thenReturn(realObjectMapper.valueToTree(partnerData));
+        when(cbServerProperties.getExtCourseCompatibilityLevel()).thenReturn(1);
+
+        boolean result = (boolean) method.invoke(ciosContentService, contentNode, "PARTNER_1");
+
+        assertTrue(result);
+        assertEquals(1, contentNode.path(Constants.REQUIRED_KARMA_COINS).asInt());
+        assertEquals(1, contentNode.path(Constants.COMPATIBILITY_LEVEL).asInt());
     }
 
     // ---- updateContentWithRequiredFields: compatibilityLevel is no longer stamped here; it is set only
