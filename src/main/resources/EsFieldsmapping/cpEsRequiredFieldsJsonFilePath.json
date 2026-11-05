@@ -69,5 +69,8 @@
   },
   "overAllLimit": {
     "type": "number"
+  },
+  "addKarmaPointEnabled": {
+    "type": "boolean"
   }
 }
